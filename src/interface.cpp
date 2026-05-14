@@ -2,7 +2,7 @@
 #include "curvatureEstimation.h"
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector asoCurvatureEstimation_interface
+int asoCurvatureEstimation_interface
 (const Rcpp::NumericVector pointVec,
  const Rcpp::NumericVector queriesVec,
  const double scale

@@ -11,7 +11,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // asoCurvatureEstimation_interface
-Rcpp::IntegerVector asoCurvatureEstimation_interface(const Rcpp::NumericVector pointVec, const Rcpp::NumericVector queriesVec, const double scale);
+int asoCurvatureEstimation_interface(const Rcpp::NumericVector pointVec, const Rcpp::NumericVector queriesVec, const double scale);
 RcppExport SEXP _Poncatime_asoCurvatureEstimation_interface(SEXP pointVecSEXP, SEXP queriesVecSEXP, SEXP scaleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
