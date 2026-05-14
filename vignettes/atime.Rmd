@@ -17,12 +17,12 @@ data.table::setDTthreads(1)
 The goal of this vignette is to give some examples of how to benchmark the C++ code.
 
 ```{r}
-Poncatime:::generate_data_interface(1000, 100, 10)
 result_list <- atime::atime(
   setup={
     N_list <- Poncatime:::generate_data_interface(N, N*100, 10)
   },
-  asoCurvatureEstimation=with(N_list, data.frame(count=Poncatime:::asoCurvatureEstimation_interface(pointVec, queriesVec)))
+  result=TRUE,
+  asoCurvatureEstimation=with(N_list, data.frame(count=Poncatime:::asoCurvatureEstimation_interface(pointVec, queriesVec, 1)))
 )
 plot(result_list)
 
