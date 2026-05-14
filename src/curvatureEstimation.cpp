@@ -58,72 +58,37 @@ private:
 #define MAX_NOISE 1.01
 /*! \brief Generate points on a plane */
 template <typename DataPoint>
-[[nodiscard]] DataPoint getPointOnPlane(const typename DataPoint::VectorType _vPosition,
-                                        const typename DataPoint::VectorType _vNormal,
-                                        const typename DataPoint::Scalar _radius,
-                                        const bool _bAddPositionNoise = true, const bool _bAddNormalNoise = true,
-                                        const bool _bReverseNormals = false)
+[[nodiscard]] DataPoint getPointOnPlane(const typename DataPoint::VectorType& _vPosition,
+                                       const typename DataPoint::Scalar& _width,
+                                       const typename DataPoint::Scalar& _height,
+                                       const typename DataPoint::VectorType& _localxAxis,
+                                       const typename DataPoint::VectorType& _localyAxis,
+                                       const bool _bAddPositionNoise = true)
 {
-    using Scalar         = typename DataPoint::Scalar;
-    using VectorType     = typename DataPoint::VectorType;
-    using QuaternionType = Eigen::Quaternion<Scalar>;
+    using Scalar     = typename DataPoint::Scalar;
+    using VectorType = typename DataPoint::VectorType;
 
-    VectorType vRandom;
-    VectorType vRandomDirection = VectorType::Zero();
-    VectorType vRandomPoint     = VectorType::Zero();
-    VectorType vLocalUp         = _vNormal;
+    const Scalar u = Eigen::internal::random<Scalar>(-_width / Scalar(2), _width / Scalar(2));
+    const Scalar v = Eigen::internal::random<Scalar>(-_height / Scalar(2), _height / Scalar(2));
 
-    do
-    {
-        vRandom          = VectorType::Random().normalized(); // Direction in the unit sphere
-        vRandomDirection = vRandom.cross(vLocalUp);
-    } while (vRandomDirection == VectorType::Zero());
-
-    vRandomDirection = vRandomDirection.normalized();
-    vRandomPoint     = vRandomDirection * _radius;
-    vRandomPoint += _vPosition;
+    VectorType vRandomPosition = _vPosition + u * _localxAxis + v * _localyAxis;
 
     if (_bAddPositionNoise)
     {
-        vRandomPoint = vRandomPoint + VectorType::Random().normalized() *
-                                          Eigen::internal::random<Scalar>(Scalar(0), Scalar(1. - MIN_NOISE));
+        vRandomPosition = vRandomPosition +
+                          VectorType::Random().normalized() * Eigen::internal::random<Scalar>(0., 1. - MIN_NOISE);
     }
 
-    if (_bAddNormalNoise)
-    {
-        VectorType vLocalLeft  = vLocalUp.cross(vRandomDirection);
-        VectorType vLocalFront = vLocalLeft.cross(vLocalUp);
-
-        Scalar rotationAngle     = Eigen::internal::random<Scalar>(Scalar(-M_PI / 16.), Scalar(M_PI / 16.));
-        VectorType vRotationAxis = vLocalLeft;
-        QuaternionType qRotation = QuaternionType(Eigen::AngleAxis<Scalar>(rotationAngle, vRotationAxis));
-        qRotation                = qRotation.normalized();
-        vLocalUp                 = qRotation * vLocalUp;
-
-        rotationAngle = Eigen::internal::random<Scalar>(Scalar(-M_PI / 16.), Scalar(M_PI / 16.));
-        vRotationAxis = vLocalFront;
-        qRotation     = QuaternionType(Eigen::AngleAxis<Scalar>(rotationAngle, vRotationAxis));
-        qRotation     = qRotation.normalized();
-        vLocalUp      = qRotation * vLocalUp;
-    }
-
-    if (_bReverseNormals)
-    {
-        const float reverse = Eigen::internal::random<float>(0.f, 1.f);
-        if (reverse > 0.5f)
-            vLocalUp = -vLocalUp;
-    }
-
-    return DataPoint(vRandomPoint, vLocalUp);
+    return DataPoint(vRandomPosition, _localxAxis.cross(_localyAxis));
 }
 
 void generate_data(double* point, int nPoints, double* queries, int nQueries, double dataScale)
 {
     MyPointSimple::VectorType position = MyPointSimple::VectorType::Random();
-    MyPointSimple::VectorType normal = MyPointSimple::VectorType::Random();
+
     for (int i = 0; i != nPoints; ++i)
     {
-        auto p = getPointOnPlane<MyPointSimple>(position, normal, dataScale);
+        auto p = getPointOnPlane<MyPointSimple>(position, dataScale,dataScale, {1,0,0}, {0,1,0});
         double* pp = point + 2*DIMENSION*i;
         pp[0] = p.pos().x();
         pp[1] = p.pos().y();
@@ -135,7 +100,7 @@ void generate_data(double* point, int nPoints, double* queries, int nQueries, do
 
     for (int i = 0; i != nQueries; ++i)
     {
-        auto p = getPointOnPlane<MyPointSimple>(position, normal, dataScale);
+        auto p = getPointOnPlane<MyPointSimple>(position, dataScale,dataScale, {1,0,0}, {0,1,0});
         double* pp = queries + DIMENSION*i;
         pp[0] = p.pos().x();
         pp[1] = p.pos().y();
@@ -152,6 +117,7 @@ int asoCurvatureEstimation(const double * points, int nPoints, const double *que
 
     using W   = DistWeightFunc<Point, SmoothWeightKernel<double> > ;
     using Fit =  Basket<Point, W, OrientedSphereFit, OrientedSphereSpaceDer, MlsSphereFitDer>;
+    // using Fit =  Basket<Point, W, CovariancePlaneFit>;
 
     /// Bind dataset to Ponca representation
     std::vector<Point> data;
