@@ -1,0 +1,2 @@
+useDynLib(poncatime)
+importFrom(Rcpp, evalCpp)

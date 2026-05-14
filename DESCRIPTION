@@ -14,3 +14,4 @@ Imports: Rcpp
 SystemRequirements: CMake
 Encoding: UTF-8
 License: MIT + file LICENSE
+Suggests: testthat

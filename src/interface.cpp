@@ -2,13 +2,12 @@
 #include "curvatureEstimation.h"
 
 // [[Rcpp::export]]
-//
-Rcpp::IntegerVector asoCurvatureEstimationF
+Rcpp::IntegerVector asoCurvatureEstimation_interface
 (const Rcpp::NumericVector pointVec,
  const Rcpp::NumericVector queriesVec,
- const numeric scale
+ const double scale
  ){
-  return asoCurvatureEstimationF(pointVec.begin(), pointVec.length(),
+  return asoCurvatureEstimation(pointVec.begin(), pointVec.length(),
                                 queriesVec.begin(), queriesVec.length(), scale);
 }
 

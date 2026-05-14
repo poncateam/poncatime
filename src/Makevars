@@ -1,0 +1,2 @@
+PKG_CPPFLAGS += -Iexternal/ponca/ -Iexternal/ponca/external/eigen/
+
