@@ -1,18 +1,17 @@
 #include "curvatureEstimation.h"
 
-#include "../external/ponca/Ponca/Ponca"
+#include "external/ponca/Ponca/Ponca"
 //#include <Ponca/Ponca>
 
 #define DIMENSION 3
 
 using namespace Ponca;
 
-template <typename _Scalar>
 class MyPoint
 {
 public:
     enum {Dim = DIMENSION};
-    typedef _Scalar Scalar;
+    using Scalar = double;
     typedef Eigen::Matrix<Scalar, Dim, 1>   VectorType;
     typedef Eigen::Matrix<Scalar, Dim, Dim> MatrixType;
 
@@ -31,21 +30,19 @@ public:
     VectorType m_pos, m_normal;
 };
 
-template <typename Scalar>
 struct PassThroughConverter{
-    inline void operator()( const std::vector< MyPoint<Scalar> > &&i, std::vector< MyPoint<Scalar> > & o ) {
+    inline void operator()( const std::vector< MyPoint > &&i, std::vector< MyPoint > & o ) {
         o = std::move(i);
     }
 };
 
-template <typename Scalar>
-int asoCurvatureEstimation(const Scalar * points, int nPoints, const float *queries, int nQueries, Scalar scale)
+int asoCurvatureEstimation(const double * points, int nPoints, const double *queries, int nQueries, double scale)
 {
-    using Point     = MyPoint<Scalar>;
-    using Vector    = typename Point::VectorType;
+    using Point     = MyPoint;
+    using Vector    = Point::VectorType;
     using VectorMap = Eigen::Map<const Vector>;
 
-    using W   = DistWeightFunc<Point, SmoothWeightKernel<Scalar> > ;
+    using W   = DistWeightFunc<Point, SmoothWeightKernel<double> > ;
     using Fit =  Basket<Point, W, OrientedSphereFit, OrientedSphereSpaceDer, MlsSphereFitDer>;
 
     /// Bind dataset to Ponca representation
@@ -73,9 +70,4 @@ int asoCurvatureEstimation(const Scalar * points, int nPoints, const float *quer
     }
 
     return ret;
-}
-
-int asoCurvatureEstimationF(const float * points, int nPoints, const float *queries, int nQueries, float scale)
-{
-    return asoCurvatureEstimation(points, nPoints, queries, nQueries, scale);
 }

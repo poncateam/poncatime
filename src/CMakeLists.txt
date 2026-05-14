@@ -13,9 +13,9 @@ set( PONCA_CONFIGURE_DOC      CACHE BOOL OFF)
 add_subdirectory(external/ponca)
 
 add_library(backend STATIC
-        include/export.h
-        include/curvatureEstimation.h
-        src/curvatureEstimation.cpp)
+        export.h
+        curvatureEstimation.h
+        curvatureEstimation.cpp)
 target_link_libraries(backend PUBLIC Ponca::Fitting Ponca::SpatialPartitioning)
 target_include_directories(backend PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
