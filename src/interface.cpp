@@ -16,5 +16,7 @@ Rcpp::List generate_data_interface
   Rcpp::NumericVector pointVec(N_data*6);
   Rcpp::NumericVector queriesVec(N_queries*3);
   generate_data(pointVec.begin(), N_data, queriesVec.begin(), N_queries);
-  return Rcpp::List(Rcpp::Named("pointVec", pointVec), Rcpp::Named("queriesVec", queriesVec));
+  return Rcpp::List::create
+    (Rcpp::Named("pointVec", pointVec),
+     Rcpp::Named("queriesVec", queriesVec));
 }
