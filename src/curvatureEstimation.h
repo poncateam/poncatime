@@ -9,4 +9,4 @@
 ///
 extern "C" EXPORT int asoCurvatureEstimation(const double * points, int nPoints, const double * queries, int nQueries, double scale);
 
-
+int generate_data(double*, int, double*, int);
