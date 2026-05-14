@@ -1,0 +1,16 @@
+Package: Poncatime
+Type: Package
+Title: Performance analysis of Ponca library using ATime
+Version: 0.0.1
+Author: Nicolas Mellado
+Authors@R: person(given = "Nicolas",
+                family = "Mellado",
+                role = c("aut", "cre"),
+                email = "nmellado0@gmail.com")
+Maintainer: Nicolas Mellado <nmellado0@gmail.com>
+Description: Performance analysis of the ponca library using ATime
+LinkingTo: Rcpp
+Imports: Rcpp
+SystemRequirements: CMake
+Encoding: UTF-8
+License: MIT + file LICENSE
