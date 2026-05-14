@@ -23,9 +23,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// generate_data_interface
+Rcpp::List generate_data_interface(const int N_data, const int N_queries, double dataScale);
+RcppExport SEXP _Poncatime_generate_data_interface(SEXP N_dataSEXP, SEXP N_queriesSEXP, SEXP dataScaleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type N_data(N_dataSEXP);
+    Rcpp::traits::input_parameter< const int >::type N_queries(N_queriesSEXP);
+    Rcpp::traits::input_parameter< double >::type dataScale(dataScaleSEXP);
+    rcpp_result_gen = Rcpp::wrap(generate_data_interface(N_data, N_queries, dataScale));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_Poncatime_asoCurvatureEstimation_interface", (DL_FUNC) &_Poncatime_asoCurvatureEstimation_interface, 3},
+    {"_Poncatime_generate_data_interface", (DL_FUNC) &_Poncatime_generate_data_interface, 3},
     {NULL, NULL, 0}
 };
 
