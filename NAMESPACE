@@ -1,2 +1,2 @@
-useDynLib(poncatime)
+useDynLib(Poncatime)
 importFrom(Rcpp, evalCpp)
