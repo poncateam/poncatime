@@ -21,4 +21,5 @@ License: MIT + file LICENSE
 Suggests:
  testthat,
  litedown,
- atime
+ atime,
+ ggplot2
