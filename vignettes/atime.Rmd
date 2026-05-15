@@ -22,6 +22,7 @@ result_list <- atime::atime(
     N_list <- Poncatime:::generate_data_interface(N, N*100, 10)
   },
   result=TRUE,
+  verbose=TRUE,
   asoCurvatureEstimation=with(N_list, data.frame(count=Poncatime:::asoCurvatureEstimation_interface(pointVec, queriesVec, 1)))
 )
 plot(result_list)

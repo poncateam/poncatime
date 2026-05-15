@@ -9,6 +9,3 @@ test_that("generate_data works", {
   expect_equal(length(N_list$queriesVec), 3*N_queries)
   (count <- with(N_list, Poncatime:::asoCurvatureEstimation_interface(pointVec, queriesVec, dataScale/10)))
 })
-
-
-
