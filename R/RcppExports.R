@@ -5,7 +5,7 @@ asoCurvatureEstimation_interface <- function(points, queries, scale) {
     .Call('_Poncatime_asoCurvatureEstimation_interface', PACKAGE = 'Poncatime', points, queries, scale)
 }
 
-generate_data_interface <- function(points, queries, dataScale) {
-    invisible(.Call('_Poncatime_generate_data_interface', PACKAGE = 'Poncatime', points, queries, dataScale))
+generate_data_interface <- function(N_data, N_queries, dataScale) {
+    .Call('_Poncatime_generate_data_interface', PACKAGE = 'Poncatime', N_data, N_queries, dataScale)
 }
 

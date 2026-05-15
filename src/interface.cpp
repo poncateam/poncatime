@@ -13,9 +13,13 @@ int asoCurvatureEstimation_interface
 }
 
 // [[Rcpp::export]]
-void generate_data_interface
-(Eigen::MatrixXd& points,
- Eigen::MatrixXd& queries,
- double dataScale){
+Rcpp::List generate_data_interface
+(const int N_data,
+ const int N_queries,
+ const double dataScale){
+  Eigen::MatrixXd points(N_data, 6), queries(N_queries, 3);
   generate_data(points, queries, dataScale);
+  return Rcpp::List::create
+    (Rcpp::Named("points", points),
+     Rcpp::Named("queries", queries));
 }

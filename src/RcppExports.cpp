@@ -25,15 +25,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // generate_data_interface
-void generate_data_interface(Eigen::MatrixXd& points, Eigen::MatrixXd& queries, double dataScale);
-RcppExport SEXP _Poncatime_generate_data_interface(SEXP pointsSEXP, SEXP queriesSEXP, SEXP dataScaleSEXP) {
+Rcpp::List generate_data_interface(const int N_data, const int N_queries, const double dataScale);
+RcppExport SEXP _Poncatime_generate_data_interface(SEXP N_dataSEXP, SEXP N_queriesSEXP, SEXP dataScaleSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type points(pointsSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type queries(queriesSEXP);
-    Rcpp::traits::input_parameter< double >::type dataScale(dataScaleSEXP);
-    generate_data_interface(points, queries, dataScale);
-    return R_NilValue;
+    Rcpp::traits::input_parameter< const int >::type N_data(N_dataSEXP);
+    Rcpp::traits::input_parameter< const int >::type N_queries(N_queriesSEXP);
+    Rcpp::traits::input_parameter< const double >::type dataScale(dataScaleSEXP);
+    rcpp_result_gen = Rcpp::wrap(generate_data_interface(N_data, N_queries, dataScale));
+    return rcpp_result_gen;
 END_RCPP
 }
 

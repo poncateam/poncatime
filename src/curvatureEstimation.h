@@ -14,3 +14,4 @@ int asoCurvatureEstimation(const Eigen::MatrixXd& points,
 void generate_data(Eigen::MatrixXd& points,
                    Eigen::MatrixXd& queries,
                    double dataScale);
+ 
