@@ -1,4 +1,5 @@
 test.list <- atime::atime_test_list(
+  seconds.limit=0.1,
   asoCurvatureEstimation=atime::atime_test(
     setup={
       N_points <- N*10
