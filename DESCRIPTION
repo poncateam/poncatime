@@ -9,8 +9,14 @@ Authors@R: person(given = "Nicolas",
                 email = "nmellado0@gmail.com")
 Maintainer: Nicolas Mellado <nmellado0@gmail.com>
 Description: Performance analysis of the ponca library using ATime
-LinkingTo: Rcpp
-Imports: Rcpp
+LinkingTo:
+ Rcpp
+ RcppEigen
+Imports:
+ Rcpp
+ RcppEigen
+Depends:
+ RcppEigen
 SystemRequirements: CMake
 Encoding: UTF-8
 License: MIT + file LICENSE

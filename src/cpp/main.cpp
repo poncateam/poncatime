@@ -8,10 +8,12 @@ int main(int argc, char **argv)
     int nbQueries = 100;
     double dataScale  = 10;
     double scale  = dataScale / 5;
-    double* points  = new double[6*nbPoints];
-    double* queries = new double[3*nbQueries];
 
-    generate_data(points, nbPoints, queries, nbQueries, dataScale);
+    Eigen::MatrixXd points(nbPoints, 6);
+    Eigen::MatrixXd queries(nbQueries, 3);
+
+    generate_data(points,
+                queries, dataScale);
 
     // std::cout << "#Data" << std::endl;
     // std::cout << "# x y z nx ny nz" << std::endl;
@@ -35,10 +37,9 @@ int main(int argc, char **argv)
     // }
 
 
-    int ret = asoCurvatureEstimation(points, nbPoints, queries, nbQueries, scale);
-
-    delete [] points;
-    delete [] queries;
+    int ret = asoCurvatureEstimation(points,
+                queries,
+                scale);
 
     std::cout << "Number of fits: " << ret << " (over " << nbQueries << " tries)" << std::endl;
     /// \brief Generate data for curvature estimation

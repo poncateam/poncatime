@@ -7,34 +7,34 @@
 
 using namespace Ponca;
 
-class MyPoint
+template<typename InMType>
+class MyPointMap
 {
 public:
     enum {Dim = DIMENSION};
     using Scalar = double;
     typedef Eigen::Matrix<Scalar, Dim, 1>   VectorType;
     typedef Eigen::Matrix<Scalar, Dim, Dim> MatrixType;
+    typedef Eigen::VectorBlock<InMType> InnerVectorType;
 
-    PONCA_MULTIARCH inline MyPoint(const Scalar* _interlacedArray, int _pId)
-        : m_pos   (Eigen::Map< const VectorType >(_interlacedArray + Dim*2*_pId  )),
-        m_normal(Eigen::Map< const VectorType >(_interlacedArray + Dim*2*_pId+Dim))
+    PONCA_MULTIARCH inline MyPointMap(InMType &mat, int _pId)
+        : m_pos  (mat.col(_pId).head(3)),
+        m_normal (mat.col(_pId).tail(3))
     {}
 
-    // PONCA_MULTIARCH inline const Eigen::Map< const VectorType >& pos()    const { return m_pos; }
-    // PONCA_MULTIARCH inline const Eigen::Map< const VectorType >& normal() const { return m_normal; }
-    PONCA_MULTIARCH inline const VectorType& pos()    const { return m_pos; }
-    PONCA_MULTIARCH inline const VectorType& normal() const { return m_normal; }
+    PONCA_MULTIARCH inline const InnerVectorType& pos()    const { return m_pos; }
+    PONCA_MULTIARCH inline const InnerVectorType& normal() const { return m_normal; }
 
 public:
-    // Eigen::Map< const VectorType > m_pos, m_normal;
-    VectorType m_pos, m_normal;
+    InnerVectorType m_pos, m_normal;
+    // VectorType m_pos, m_normal;
 };
 
-struct PassThroughConverter{
-    inline void operator()( const std::vector< MyPoint > &&i, std::vector< MyPoint > & o ) {
-        o = std::move(i);
-    }
-};
+// struct PassThroughConverter{
+//     inline void operator()( const std::vector< MyPointMap > &&i, std::vector< MyPointMap > & o ) {
+//         o = std::move(i);
+//     }
+// };
 
 class MyPointSimple
 {
@@ -82,36 +82,31 @@ template <typename DataPoint>
     return DataPoint(vRandomPosition, _localxAxis.cross(_localyAxis));
 }
 
-void generate_data(double* point, int nPoints, double* queries, int nQueries, double dataScale)
+void generate_data(Eigen::MatrixXd& points,
+                   Eigen::MatrixXd& queries,
+                   double dataScale)
 {
     MyPointSimple::VectorType position = MyPointSimple::VectorType::Random();
 
-    for (int i = 0; i != nPoints; ++i)
+    for (int i = 0; i != points.rows(); ++i)
     {
         auto p = getPointOnPlane<MyPointSimple>(position, dataScale,dataScale, {1,0,0}, {0,1,0});
-        double* pp = point + 2*DIMENSION*i;
-        pp[0] = p.pos().x();
-        pp[1] = p.pos().y();
-        pp[2] = p.pos().z();
-        pp[3] = p.normal().x();
-        pp[4] = p.normal().y();
-        pp[5] = p.normal().z();
+        points.row(i) << p.pos().x(), p.pos().y(),p.pos().z(),p.normal().x(),p.normal().y(),p.normal().z();
     }
 
-    for (int i = 0; i != nQueries; ++i)
+    for (int i = 0; i != queries.rows(); ++i)
     {
         auto p = getPointOnPlane<MyPointSimple>(position, dataScale,dataScale, {1,0,0}, {0,1,0});
-        double* pp = queries + DIMENSION*i;
-        pp[0] = p.pos().x();
-        pp[1] = p.pos().y();
-        pp[2] = p.pos().z();
+        queries.row(i) << p.pos().x(), p.pos().y(),p.pos().z();
     }
 }
 
 
-int asoCurvatureEstimation(const double * points, int nPoints, const double *queries, int nQueries, double scale)
+int asoCurvatureEstimation(const Eigen::MatrixXd& points,
+                           const Eigen::MatrixXd& queries,
+                           double scale)
 {
-    using Point     = MyPoint;
+    using Point     = MyPointSimple;
     using Vector    = Point::VectorType;
     using VectorMap = Eigen::Map<const Vector>;
 
@@ -119,12 +114,15 @@ int asoCurvatureEstimation(const double * points, int nPoints, const double *que
     using Fit =  Basket<Point, W, OrientedSphereFit, OrientedSphereSpaceDer, MlsSphereFitDer>;
     // using Fit =  Basket<Point, W, CovariancePlaneFit>;
 
+    int nPoints  = points.rows();
+    int nQueries = queries.rows();
+
     /// Bind dataset to Ponca representation
     std::vector<Point> data;
     data.reserve(nPoints);
     for (int i = 0; i != nPoints; ++i)
     {
-        data.push_back(Point(points, i));
+        data.emplace_back(points.row(i).head(3),points.row(i).tail(3));
     }
 
     /// Generate acceleration structure
@@ -135,7 +133,7 @@ int asoCurvatureEstimation(const double * points, int nPoints, const double *que
     int ret = 0;
     for (int i = 0; i != nQueries; ++i)
     {
-        VectorMap q(queries + DIMENSION*nQueries);
+        Vector q(queries.row(i).head(3));
         Fit f;
         f.setWeightFunc(W(scale));
         f.init(q);

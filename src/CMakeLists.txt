@@ -27,4 +27,3 @@ endif()
 add_executable(poncatime-test cpp/main.cpp)
 target_link_libraries(poncatime-test PUBLIC poncatime)
 target_include_directories(poncatime-test PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-

@@ -11,29 +11,28 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // asoCurvatureEstimation_interface
-int asoCurvatureEstimation_interface(const Rcpp::NumericVector pointVec, const Rcpp::NumericVector queriesVec, const double scale);
-RcppExport SEXP _Poncatime_asoCurvatureEstimation_interface(SEXP pointVecSEXP, SEXP queriesVecSEXP, SEXP scaleSEXP) {
+int asoCurvatureEstimation_interface(const Eigen::MatrixXd& points, const Eigen::MatrixXd& queries, const double scale);
+RcppExport SEXP _Poncatime_asoCurvatureEstimation_interface(SEXP pointsSEXP, SEXP queriesSEXP, SEXP scaleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type pointVec(pointVecSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type queriesVec(queriesVecSEXP);
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type points(pointsSEXP);
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type queries(queriesSEXP);
     Rcpp::traits::input_parameter< const double >::type scale(scaleSEXP);
-    rcpp_result_gen = Rcpp::wrap(asoCurvatureEstimation_interface(pointVec, queriesVec, scale));
+    rcpp_result_gen = Rcpp::wrap(asoCurvatureEstimation_interface(points, queries, scale));
     return rcpp_result_gen;
 END_RCPP
 }
 // generate_data_interface
-Rcpp::List generate_data_interface(const int N_data, const int N_queries, double dataScale);
-RcppExport SEXP _Poncatime_generate_data_interface(SEXP N_dataSEXP, SEXP N_queriesSEXP, SEXP dataScaleSEXP) {
+void generate_data_interface(const Eigen::MatrixXd& points, const Eigen::MatrixXd& queries, double dataScale);
+RcppExport SEXP _Poncatime_generate_data_interface(SEXP pointsSEXP, SEXP queriesSEXP, SEXP dataScaleSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const int >::type N_data(N_dataSEXP);
-    Rcpp::traits::input_parameter< const int >::type N_queries(N_queriesSEXP);
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type points(pointsSEXP);
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type queries(queriesSEXP);
     Rcpp::traits::input_parameter< double >::type dataScale(dataScaleSEXP);
-    rcpp_result_gen = Rcpp::wrap(generate_data_interface(N_data, N_queries, dataScale));
-    return rcpp_result_gen;
+    generate_data_interface(points, queries, dataScale);
+    return R_NilValue;
 END_RCPP
 }
 
