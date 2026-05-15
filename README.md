@@ -40,3 +40,27 @@ Or test under valgrind via
 ```sh
 R -d valgrind --vanilla < tests/testthat/test-small.R
 ```
+
+# Benchmarking
+
+## performance testing
+
+[.ci/atime/tests.R](https://github.com/poncateam/poncatime/blob/main/.ci/atime/tests.R) contains test cases.
+
+To run the performance testing, I had to make some modifications to atime to handle this use case. To install the updated version,
+
+```r
+remotes::install_github("tdhock/atime@poncatime")
+```
+
+Then I run the performance test suite via
+
+```r
+atime::atime_pkg("path/to/poncatime")
+```
+
+which creates result files in `poncatime/.ci/atime`.
+
+## comparative benchmarking
+
+If there are other algorithms (baselines, state-of-the-art) that do a similar computation as asoCurveEstimation, we can add them to the atime code in the [vignette](https://github.com/poncateam/poncatime/blob/main/vignettes/atime.Rmd), to compare performance.
