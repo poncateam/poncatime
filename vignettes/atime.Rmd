@@ -24,6 +24,7 @@ result_list <- atime::atime(
     dataScale <- 10
     N_list <- Poncatime:::generate_data_interface(N_points, N_queries, dataScale)
   },
+  seconds.limit=1,
   result=TRUE,
   asoCurvatureEstimation=with(N_list, data.frame(count=Poncatime:::asoCurvatureEstimation_interface(points, queries, dataScale/5)))
 )
