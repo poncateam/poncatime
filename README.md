@@ -9,7 +9,7 @@ cd poncatime
 git submodule update --init --recursive
 ```
 
-## Compile and test
+## Compile and test
 
 First install R. If you don’t have the Rcpp package, you can install it in R via:
 
