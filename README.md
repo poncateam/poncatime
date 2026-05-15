@@ -17,7 +17,7 @@ First install R. If you don’t have the Rcpp package, you can install it in R v
 install.packages("Rcpp")
 ```
 
-If you edit the `*_interface` functions in [https://github.com/poncateam/poncatime/blob/main/src/interface.cpp](src/interface.cpp) then you need to re-generate `src/RcppExports.cpp` and `R/RcppExports.R`:
+If you edit the `*_interface` functions in [src/interface.cpp](https://github.com/poncateam/poncatime/blob/main/src/interface.cpp) then you need to re-generate `src/RcppExports.cpp` and `R/RcppExports.R`:
 
 ```sh
 R -e "Rcpp::compileAttributes('path/to/poncatime')"
