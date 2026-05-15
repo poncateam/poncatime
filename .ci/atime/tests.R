@@ -7,6 +7,7 @@ test.list <- atime::atime_test_list(
       N_list <- Poncatime:::generate_data_interface(N_points, N_queries, dataScale)
     },
     result=TRUE,
+    first_valgrind_ok="c9c2aa49c23f7b06ab06fa67e5f4066856c801f4", # first version which compiles and runs without valgrind read errors.
     expr=with(N_list, data.frame(count=Poncatime:::asoCurvatureEstimation_interface(points, queries, dataScale/5)))
   )
 )
