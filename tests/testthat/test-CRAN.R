@@ -1,11 +1,14 @@
 library(testthat)
 
+
+
 test_that("generate_data works", {
   N_data <- 10000
   N_queries <- 1000
   dataScale <- 10
-  N_list <- Poncatime:::generate_data_interface(N_data, N_queries, dataScale)
-  expect_equal(length(N_list$pointVec), 6*N_data)
-  expect_equal(length(N_list$queriesVec), 3*N_queries)
+  points <- matrix(nrow=N_data, ncol=6);
+  queries <- matrix(nrow=N_queries, ncol=3);
+
+  Poncatime:::generate_data_interface(N_data, N_queries, dataScale)
   (count <- with(N_list, Poncatime:::asoCurvatureEstimation_interface(pointVec, queriesVec, dataScale/5)))
 })

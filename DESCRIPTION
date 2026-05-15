@@ -10,10 +10,10 @@ Authors@R: person(given = "Nicolas",
 Maintainer: Nicolas Mellado <nmellado0@gmail.com>
 Description: Performance analysis of the ponca library using ATime
 LinkingTo:
- Rcpp
+ Rcpp,
  RcppEigen
 Imports:
- Rcpp
+ Rcpp,
  RcppEigen
 Depends:
  RcppEigen

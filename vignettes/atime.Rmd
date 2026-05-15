@@ -19,10 +19,12 @@ The goal of this vignette is to give some examples of how to benchmark the C++ c
 ```{r}
 result_list <- atime::atime(
   setup={
-    N_list <- Poncatime:::generate_data_interface(N, N, 10)
+    points <- matrix(nrow=N, ncol=6);
+    queries <- matrix(nrow=N, ncol=3);
+    Poncatime:::generate_data_interface(points, queries, 10)
   },
   result=TRUE,
-  asoCurvatureEstimation=with(N_list, data.frame(count=Poncatime:::asoCurvatureEstimation_interface(pointVec, queriesVec, 2)))
+  asoCurvatureEstimation=with(N_list, data.frame(count=Poncatime:::asoCurvatureEstimation_interface(points, queries, 2)))
 )
 plot(result_list)
 
