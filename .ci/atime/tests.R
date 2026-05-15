@@ -1,3 +1,4 @@
+remove.units <- "kilobytes"
 base.ref <- "main"
 test.list <- atime::atime_test_list(
   seconds.limit=0.1,
