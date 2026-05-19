@@ -2,12 +2,16 @@ Package: Poncatime
 Type: Package
 Title: Performance analysis of Ponca library using ATime
 Version: 0.0.1
-Author: Nicolas Mellado
-Authors@R: person(given = "Nicolas",
-                family = "Mellado",
-                role = c("aut", "cre"),
-                email = "nmellado0@gmail.com")
-Maintainer: Nicolas Mellado <nmellado0@gmail.com>
+Authors@R: c(
+ person(given = "Nicolas",
+        family = "Mellado",
+        role = c("aut", "cre"),
+        email = "nmellado0@gmail.com"),
+ person("Toby", "Hocking",
+        email="toby.hocking@r-project.org",
+        role="aut",
+        comment = c(ORCID="0000-0002-3146-0865"))
+	)
 Description: Performance analysis of the ponca library using ATime
 LinkingTo:
  Rcpp,
