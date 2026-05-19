@@ -6,11 +6,6 @@ on:
       - opened
       - reopened
       - synchronize
-    # Modify path filters as needed:
-    paths:
-      - 'R/**'
-      - 'src/**'
-      - '.ci/atime/**'
 
 jobs:
   comment:
