@@ -36,11 +36,19 @@ jobs:
             git switch "${GITHUB_HEAD_REF}"
         shell: bash
 
-      - name: Setup r2u
-        uses: eddelbuettel/github-actions/r2u-setup@master
-      - run: /usr/bin/sudo DEBIAN_FRONTEND=noninteractive apt install r-recommended -y
+      - name: Set up the required system dependency libgit2
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y cmake libssl-dev
+          git clone --branch v1.6.4 --depth 1 https://github.com/libgit2/libgit2.git
+          cd libgit2 && mkdir build && cd build
+          cmake .. -DCMAKE_INSTALL_PREFIX=/usr
+          make && sudo make install
+          cd ../..
+        shell: bash
+
       - name: Install R packages (DESCRIPTION-specified deps)
         uses: r-lib/actions/setup-r-dependencies@v2
+
       - name: Install required dependencies and initiate atime magic
         run: |
             Rscript -e 'install.packages(c("atime", "remotes", "ggplot2", "directlabels"))'
