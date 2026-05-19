@@ -54,6 +54,11 @@ private:
     VectorType m_pos, m_normal;
 };
 
+
+
+/// Generate acceleration structure
+Ponca::KdTree<MyPointSimple> tree;
+
 #define MIN_NOISE 0.99
 #define MAX_NOISE 1.01
 /*! \brief Generate points on a plane */
@@ -99,6 +104,20 @@ void generate_data(Eigen::MatrixXd& points,
         auto p = getPointOnPlane<MyPointSimple>(position, dataScale,dataScale, {1,0,0}, {0,1,0});
         queries.row(i) << p.pos().x(), p.pos().y(),p.pos().z();
     }
+
+    // using Fit =  Basket<Point, W, CovariancePlaneFit>;
+
+    int nPoints  = points.rows();
+    int nQueries = queries.rows();
+
+    /// Bind dataset to Ponca representation
+    std::vector<MyPointSimple> data;
+    data.reserve(nPoints);
+    for (int i = 0; i != nPoints; ++i)
+    {
+        data.emplace_back(points.row(i).head(3),points.row(i).tail(3));
+    }
+    tree.build(data); //, PassThroughConverter<Scalar>());
 }
 
 
@@ -112,22 +131,9 @@ int asoCurvatureEstimation(const Eigen::MatrixXd& points,
 
     using W   = DistWeightFunc<Point, SmoothWeightKernel<double> > ;
     using Fit =  Basket<Point, W, OrientedSphereFit, OrientedSphereSpaceDer, MlsSphereFitDer>;
-    // using Fit =  Basket<Point, W, CovariancePlaneFit>;
 
     int nPoints  = points.rows();
     int nQueries = queries.rows();
-
-    /// Bind dataset to Ponca representation
-    std::vector<Point> data;
-    data.reserve(nPoints);
-    for (int i = 0; i != nPoints; ++i)
-    {
-        data.emplace_back(points.row(i).head(3),points.row(i).tail(3));
-    }
-
-    /// Generate acceleration structure
-    Ponca::KdTree<Point> tree;
-    tree.build(data); //, PassThroughConverter<Scalar>());
 
     // compute queries
     int ret = 0;
@@ -137,7 +143,7 @@ int asoCurvatureEstimation(const Eigen::MatrixXd& points,
         Fit f;
         f.setWeightFunc(W(scale));
         f.init(q);
-        f.computeWithIds(tree.range_neighbors(q, scale), data);
+        f.computeWithIds(tree.range_neighbors(q, scale), tree.point_data());
         if (f.isStable()) ret++;
     }
 
