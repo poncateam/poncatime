@@ -1,7 +1,7 @@
 #include "curvatureEstimation.h"
 
 #include "external/ponca/Ponca/Ponca"
-//#include <Ponca/Ponca>
+#include <iostream>
 
 #define DIMENSION 3
 
@@ -87,7 +87,7 @@ template <typename DataPoint>
     return DataPoint(vRandomPosition, _localxAxis.cross(_localyAxis));
 }
 
-void generate_data(Eigen::MatrixXd& points,
+void generatePointClouds(Eigen::MatrixXd& points,
                    Eigen::MatrixXd& queries,
                    double dataScale)
 {
@@ -104,11 +104,13 @@ void generate_data(Eigen::MatrixXd& points,
         auto p = getPointOnPlane<MyPointSimple>(position, dataScale,dataScale, {1,0,0}, {0,1,0});
         queries.row(i) << p.pos().x(), p.pos().y(),p.pos().z();
     }
+    // reset KdTree
+    tree.build(std::vector<MyPointSimple>());
+}
 
-    // using Fit =  Basket<Point, W, CovariancePlaneFit>;
-
+bool buildKdTree(const Eigen::MatrixXd& points)
+{
     int nPoints  = points.rows();
-    int nQueries = queries.rows();
 
     /// Bind dataset to Ponca representation
     std::vector<MyPointSimple> data;
@@ -117,22 +119,27 @@ void generate_data(Eigen::MatrixXd& points,
     {
         data.emplace_back(points.row(i).head(3),points.row(i).tail(3));
     }
-    tree.build(data); //, PassThroughConverter<Scalar>());
+    tree.build(data);
+
+    return nPoints != 0;
 }
 
 
-int asoCurvatureEstimation(const Eigen::MatrixXd& points,
-                           const Eigen::MatrixXd& queries,
+int asoCurvatureEstimation(const Eigen::MatrixXd& queries,
                            double scale)
 {
+    if (tree.point_count() == 0)
+    {
+        std::cerr<< "KdTree has not been initialized" << std::endl;
+        return -1;
+    }
+
     using Point     = MyPointSimple;
     using Vector    = Point::VectorType;
-    using VectorMap = Eigen::Map<const Vector>;
 
     using W   = DistWeightFunc<Point, SmoothWeightKernel<double> > ;
     using Fit =  Basket<Point, W, OrientedSphereFit, OrientedSphereSpaceDer, MlsSphereFitDer>;
 
-    int nPoints  = points.rows();
     int nQueries = queries.rows();
 
     // compute queries
