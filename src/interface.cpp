@@ -28,3 +28,11 @@ int asoCurvatureEstimation_interface
  ){
  return asoCurvatureEstimation(queries, scale);
 }
+
+// [[Rcpp::export]]
+int planeFit_interface
+(const Eigen::MatrixXd& queries,
+ const double scale
+ ){
+ return planeFit(queries, scale);
+}

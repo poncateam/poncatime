@@ -19,8 +19,9 @@ int main(int argc, char **argv)
     }
 
     int ret = asoCurvatureEstimation(queries, scale);
-
-    std::cout << "Number of fits: " << ret << " (over " << nbQueries << " tries)" << std::endl;
+    std::cout << "[ASO] Number of fits: " << ret << " (over " << nbQueries << " tries)" << std::endl;
+    ret = planeFit(queries, scale);
+    std::cout << "[PLANE] Number of fits: " << ret << " (over " << nbQueries << " tries)" << std::endl;
 
     return EXIT_SUCCESS;
 }

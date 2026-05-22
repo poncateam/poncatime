@@ -29,4 +29,9 @@ bool buildKdTree(const Eigen::MatrixXd& points);
 ///
 /// \return the number of points correctly analyzed, or -1 if the KdTree has not been initialized first
 int asoCurvatureEstimation(const Eigen::MatrixXd& queries, double scale);
+/// \brief Run principal curvature estimation using Algebraic Shape operator
+/// \warning requires a Kdtree, \see buildKdTree
+///
+/// \return the number of points correctly analyzed, or -1 if the KdTree has not been initialized first
+int planeFit(const Eigen::MatrixXd& queries, double scale);
 

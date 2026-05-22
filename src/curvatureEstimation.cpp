@@ -124,21 +124,17 @@ bool buildKdTree(const Eigen::MatrixXd& points)
     return nPoints != 0;
 }
 
-
-int asoCurvatureEstimation(const Eigen::MatrixXd& queries,
-                           double scale)
+template <typename Fit>
+int computeFit(const Eigen::MatrixXd& queries, double scale)
 {
     if (tree.point_count() == 0)
     {
         std::cerr<< "KdTree has not been initialized" << std::endl;
         return -1;
     }
-
-    using Point     = MyPointSimple;
-    using Vector    = Point::VectorType;
-
-    using W   = DistWeightFunc<Point, SmoothWeightKernel<double> > ;
-    using Fit =  Basket<Point, W, OrientedSphereFit, OrientedSphereSpaceDer, MlsSphereFitDer>;
+    using W      = typename Fit::WeightFunction;
+    using Point  = typename Fit::DataPoint;
+    using Vector = typename Point::VectorType;
 
     int nQueries = queries.rows();
 
@@ -156,3 +152,20 @@ int asoCurvatureEstimation(const Eigen::MatrixXd& queries,
 
     return ret;
 }
+
+int asoCurvatureEstimation(const Eigen::MatrixXd& queries,
+                           double scale)
+{
+    using W   = DistWeightFunc<MyPointSimple, SmoothWeightKernel<double> > ;
+    using Fit =  Basket<MyPointSimple, W, OrientedSphereFit, OrientedSphereSpaceDer, MlsSphereFitDer>;
+    return computeFit<Fit>(queries, scale);
+}
+
+int planeFit(const Eigen::MatrixXd& queries,
+                           double scale)
+{
+    using W   = DistWeightFunc<MyPointSimple, SmoothWeightKernel<double> > ;
+    using Fit =  Basket<MyPointSimple, W, CovariancePlaneFit>;
+    return computeFit<Fit>(queries, scale);
+}
+
