@@ -157,7 +157,8 @@ int asoCurvatureEstimation(const Eigen::MatrixXd& queries,
                            double scale)
 {
     using W   = DistWeightFunc<MyPointSimple, SmoothWeightKernel<double> > ;
-    using Fit =  Basket<MyPointSimple, W, OrientedSphereFit, OrientedSphereSpaceDer, MlsSphereFitDer>;
+    using Basket = Basket<MyPointSimple, W, OrientedSphereFit>;
+    using Fit    = BasketDiff<Basket, FitSpaceDer, OrientedSphereDer, MlsSphereFitDer>;
     return computeFit<Fit>(queries, scale);
 }
 
