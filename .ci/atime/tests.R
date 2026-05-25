@@ -54,5 +54,5 @@ test.list <- atime::atime_test_list(
   )
 )
 for(test.name in names(test.list)){
-  test.list[[test.name]][["ponca v0.3"]] <- "e9456f5ab085111fcf2aebc790c92ae9a78b955f" # ponca v0.3 with Atime wrapper with KdTree API
+  test.list[[test.name]][["ponca v0.3"]] <- "Ponca_v0.3"
 }
