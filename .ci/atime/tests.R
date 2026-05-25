@@ -10,7 +10,7 @@ test.list <- atime::atime_test_list(
       status <- Poncatime:::buildKdTree_interface(N_list$points)
     },
     result=TRUE,
-    ponca_v0_3="cbbceb345ab77d30c4d88c8b66057432cdd872fe", # ponca v0.3 with Atime wrapper with KdTree API
+    ponca_v0_3="e9456f5ab085111fcf2aebc790c92ae9a78b955f", # ponca v0.3 with Atime wrapper with KdTree API
     expr=with(N_list, data.frame(status=Poncatime:::buildKdTree_interface(N_list$points)))
   ),
   "asoCurvatureEstimation(Np=Nq*10)"=atime::atime_test(
@@ -22,7 +22,7 @@ test.list <- atime::atime_test_list(
       status <- Poncatime:::buildKdTree_interface(N_list$points)
     },
     result=TRUE,
-    ponca_v0_3="cbbceb345ab77d30c4d88c8b66057432cdd872fe", # ponca v0.3 with Atime wrapper with KdTree API
+    ponca_v0_3="e9456f5ab085111fcf2aebc790c92ae9a78b955f", # ponca v0.3 with Atime wrapper with KdTree API
     expr=with(N_list, data.frame(count=Poncatime:::asoCurvatureEstimation_interface(N_list$queries, dataScale/5)))
   ),
   "asoCurvatureEstimation(Np=Nq)"=atime::atime_test(
@@ -34,7 +34,7 @@ test.list <- atime::atime_test_list(
       status <- Poncatime:::buildKdTree_interface(N_list$points)
     },
     result=TRUE,
-    ponca_v0_3="cbbceb345ab77d30c4d88c8b66057432cdd872fe", # ponca v0.3 with Atime wrapper with KdTree API
+    ponca_v0_3="e9456f5ab085111fcf2aebc790c92ae9a78b955f", # ponca v0.3 with Atime wrapper with KdTree API
     expr=with(N_list, data.frame(count=Poncatime:::asoCurvatureEstimation_interface(N_list$queries, dataScale/5)))
   ),
   "planeFit(Np=Nq*10)"=atime::atime_test(
@@ -46,7 +46,7 @@ test.list <- atime::atime_test_list(
       status <- Poncatime:::buildKdTree_interface(N_list$points)
     },
     result=TRUE,
-    ponca_v0_3="cbbceb345ab77d30c4d88c8b66057432cdd872fe", # ponca v0.3 with Atime wrapper with KdTree API
+    ponca_v0_3="e9456f5ab085111fcf2aebc790c92ae9a78b955f", # ponca v0.3 with Atime wrapper with KdTree API
     expr=with(N_list, data.frame(count=Poncatime:::planeFit_interface(N_list$queries, dataScale/5)))
   ),
   "planeFit(Np=Nq)"=atime::atime_test(
@@ -58,7 +58,7 @@ test.list <- atime::atime_test_list(
       status <- Poncatime:::buildKdTree_interface(N_list$points)
     },
     result=TRUE,
-    ponca_v0_3="cbbceb345ab77d30c4d88c8b66057432cdd872fe", # ponca v0.3 with Atime wrapper with KdTree API
+    ponca_v0_3="e9456f5ab085111fcf2aebc790c92ae9a78b955f", # ponca v0.3 with Atime wrapper with KdTree API
     expr=with(N_list, data.frame(count=Poncatime:::planeFit_interface(N_list$queries, dataScale/5)))
   )
 )
