@@ -55,4 +55,5 @@ test.list <- atime::atime_test_list(
 )
 for(test.name in names(test.list)){
   test.list[[test.name]][["ponca v0.3"]] <- "Ponca_v0.3"
+  test.list[[test.name]][["ponca v1.0"]] <- "Ponca_v1.0"
 }
