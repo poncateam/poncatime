@@ -13,3 +13,7 @@ asoCurvatureEstimation_interface <- function(queries, scale) {
     .Call('_Poncatime_asoCurvatureEstimation_interface', PACKAGE = 'Poncatime', queries, scale)
 }
 
+planeFit_interface <- function(queries, scale) {
+    .Call('_Poncatime_planeFit_interface', PACKAGE = 'Poncatime', queries, scale)
+}
+
