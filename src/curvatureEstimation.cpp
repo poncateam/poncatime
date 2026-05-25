@@ -57,7 +57,7 @@ private:
 
 
 /// Generate acceleration structure
-Ponca::KdTree<MyPointSimple> tree;
+Ponca::KdTreeDense<MyPointSimple> tree;
 
 #define MIN_NOISE 0.99
 #define MAX_NOISE 1.01
@@ -146,7 +146,7 @@ int computeFit(const Eigen::MatrixXd& queries, double scale)
         Fit f;
         f.setWeightFunc(W(scale));
         f.init(q);
-        f.computeWithIds(tree.range_neighbors(q, scale), tree.point_data());
+        f.computeWithIds(tree.range_neighbors(q, scale), tree.points());
         if (f.isStable()) ret++;
     }
 
