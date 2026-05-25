@@ -1,7 +1,7 @@
 #include "curvatureEstimation.h"
 
-#include "external/ponca/Ponca/Ponca"
 #include <iostream>
+#include "external/ponca/Ponca/Ponca"
 
 #define DIMENSION 3
 
@@ -127,7 +127,7 @@ bool buildKdTree(const Eigen::MatrixXd& points)
 template <typename Fit>
 int computeFit(const Eigen::MatrixXd& queries, double scale)
 {
-    if (tree.point_count() == 0)
+    if (tree.pointCount() == 0)
     {
         std::cerr<< "KdTree has not been initialized" << std::endl;
         return -1;
@@ -145,7 +145,7 @@ int computeFit(const Eigen::MatrixXd& queries, double scale)
         Vector q(queries.row(i).head(3));
         Fit f;
         f.setNeighborFilter(NF(q,scale));
-        f.computeWithIds(tree.range_neighbors(q, scale), tree.points());
+        f.computeWithIds(tree.rangeNeighbors(q, scale), tree.points());
         if (f.isStable()) ret++;
     }
 
