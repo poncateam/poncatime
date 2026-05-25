@@ -155,10 +155,9 @@ int computeFit(const Eigen::MatrixXd& queries, double scale)
 int asoCurvatureEstimation(const Eigen::MatrixXd& queries,
                            double scale)
 {
-    using NF     = DistWeightFunc<MyPointSimple, SmoothWeightKernel<double> > ;
-    using Basket = Basket<MyPointSimple, NF, OrientedSphereFit>;
+    using WF     = DistWeightFilter<MyPointSimple, SmoothWeightKernel<double> > ;
+    using Basket = Basket<MyPointSimple, WF, OrientedSphereFit>;
     using Fit    = BasketDiff<Basket, FitSpaceDer, OrientedSphereDer, MlsSphereFitDer,
-                    CurvatureEstimatorDer,
                     NormalDerivativeWeingartenEstimator,WeingartenCurvatureEstimatorDer>;
     return computeFit<Fit>(queries, scale);
 }
@@ -166,8 +165,8 @@ int asoCurvatureEstimation(const Eigen::MatrixXd& queries,
 int planeFit(const Eigen::MatrixXd& queries,
                            double scale)
 {
-    using NF  = DistWeightFunc<MyPointSimple, SmoothWeightKernel<double> > ;
-    using Fit = Basket<MyPointSimple, NF, CovariancePlaneFit>;
+    using WF  = DistWeightFilter<MyPointSimple, SmoothWeightKernel<double> > ;
+    using Fit = Basket<MyPointSimple, WF, CovariancePlaneFit>;
     return computeFit<Fit>(queries, scale);
 }
 
