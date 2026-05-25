@@ -144,8 +144,7 @@ int computeFit(const Eigen::MatrixXd& queries, double scale)
     {
         Vector q(queries.row(i).head(3));
         Fit f;
-        f.setWeightFunc(W(scale));
-        f.init(q);
+        f.setWeightFunc(W(q,scale));
         f.computeWithIds(tree.range_neighbors(q, scale), tree.points());
         if (f.isStable()) ret++;
     }
