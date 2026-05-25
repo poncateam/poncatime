@@ -132,7 +132,7 @@ int computeFit(const Eigen::MatrixXd& queries, double scale)
         std::cerr<< "KdTree has not been initialized" << std::endl;
         return -1;
     }
-    using W      = typename Fit::WeightFunction;
+    using NF     = typename Fit::NeighborFilter;
     using Point  = typename Fit::DataPoint;
     using Vector = typename Point::VectorType;
 
@@ -144,7 +144,7 @@ int computeFit(const Eigen::MatrixXd& queries, double scale)
     {
         Vector q(queries.row(i).head(3));
         Fit f;
-        f.setWeightFunc(W(q,scale));
+        f.setNeighborFilter(NF(q,scale));
         f.computeWithIds(tree.range_neighbors(q, scale), tree.points());
         if (f.isStable()) ret++;
     }
@@ -155,8 +155,8 @@ int computeFit(const Eigen::MatrixXd& queries, double scale)
 int asoCurvatureEstimation(const Eigen::MatrixXd& queries,
                            double scale)
 {
-    using W   = DistWeightFunc<MyPointSimple, SmoothWeightKernel<double> > ;
-    using Basket = Basket<MyPointSimple, W, OrientedSphereFit>;
+    using NF     = DistWeightFunc<MyPointSimple, SmoothWeightKernel<double> > ;
+    using Basket = Basket<MyPointSimple, NF, OrientedSphereFit>;
     using Fit    = BasketDiff<Basket, FitSpaceDer, OrientedSphereDer, MlsSphereFitDer>;
     return computeFit<Fit>(queries, scale);
 }
@@ -164,8 +164,8 @@ int asoCurvatureEstimation(const Eigen::MatrixXd& queries,
 int planeFit(const Eigen::MatrixXd& queries,
                            double scale)
 {
-    using W   = DistWeightFunc<MyPointSimple, SmoothWeightKernel<double> > ;
-    using Fit =  Basket<MyPointSimple, W, CovariancePlaneFit>;
+    using NF  = DistWeightFunc<MyPointSimple, SmoothWeightKernel<double> > ;
+    using Fit = Basket<MyPointSimple, NF, CovariancePlaneFit>;
     return computeFit<Fit>(queries, scale);
 }
 
