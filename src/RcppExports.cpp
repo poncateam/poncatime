@@ -47,18 +47,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// planeFit_interface
-Rcpp::DataFrame planeFit_interface(const Eigen::MatrixXd& queries, const double scale);
-RcppExport SEXP _Poncatime_planeFit_interface(SEXP queriesSEXP, SEXP scaleSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type queries(queriesSEXP);
-    Rcpp::traits::input_parameter< const double >::type scale(scaleSEXP);
-    rcpp_result_gen = Rcpp::wrap(planeFit_interface(queries, scale));
-    return rcpp_result_gen;
-END_RCPP
-}
 // asoCurvatureEstimationK_interface
 Rcpp::DataFrame asoCurvatureEstimationK_interface(const Eigen::MatrixXd& queries, const int k);
 RcppExport SEXP _Poncatime_asoCurvatureEstimationK_interface(SEXP queriesSEXP, SEXP kSEXP) {
@@ -68,6 +56,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type queries(queriesSEXP);
     Rcpp::traits::input_parameter< const int >::type k(kSEXP);
     rcpp_result_gen = Rcpp::wrap(asoCurvatureEstimationK_interface(queries, k));
+    return rcpp_result_gen;
+END_RCPP
+}
+// planeFit_interface
+Rcpp::DataFrame planeFit_interface(const Eigen::MatrixXd& queries, const double scale);
+RcppExport SEXP _Poncatime_planeFit_interface(SEXP queriesSEXP, SEXP scaleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type queries(queriesSEXP);
+    Rcpp::traits::input_parameter< const double >::type scale(scaleSEXP);
+    rcpp_result_gen = Rcpp::wrap(planeFit_interface(queries, scale));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -88,8 +88,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_Poncatime_generatePointClouds_interface", (DL_FUNC) &_Poncatime_generatePointClouds_interface, 3},
     {"_Poncatime_buildKdTree_interface", (DL_FUNC) &_Poncatime_buildKdTree_interface, 1},
     {"_Poncatime_asoCurvatureEstimation_interface", (DL_FUNC) &_Poncatime_asoCurvatureEstimation_interface, 2},
-    {"_Poncatime_planeFit_interface", (DL_FUNC) &_Poncatime_planeFit_interface, 2},
     {"_Poncatime_asoCurvatureEstimationK_interface", (DL_FUNC) &_Poncatime_asoCurvatureEstimationK_interface, 2},
+    {"_Poncatime_planeFit_interface", (DL_FUNC) &_Poncatime_planeFit_interface, 2},
     {"_Poncatime_planeFitK_interface", (DL_FUNC) &_Poncatime_planeFitK_interface, 2},
     {NULL, NULL, 0}
 };

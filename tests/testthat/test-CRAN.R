@@ -10,5 +10,6 @@ test_that("generate_data works", {
   status <- Poncatime:::buildKdTree_interface(N_list$points)
   expect_true(status)
   retValue <- with(N_list, Poncatime:::asoCurvatureEstimation_interface(N_list$queries, dataScale/5))
+  retValue <- with(N_list, Poncatime:::planeFitK_interface(N_list$queries, 10))
   expect_equal(retValue$nbFit, N_queries)
 })

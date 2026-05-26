@@ -18,15 +18,26 @@ The goal of this vignette is to give some examples of how to benchmark the C++ c
 
 ```{r}
 result_list <- atime::atime(
+  N=10^seq(3, 6, by=0.2),
   setup={
-    N_points <- N*10
+    N_points <- N
     N_queries <- N
     dataScale <- 10
-    N_list <- Poncatime:::generate_data_interface(N_points, N_queries, dataScale)
+    N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
+    status <- Poncatime:::buildKdTree_interface(N_list$points)
   },
-  seconds.limit=1,
+  planeFit=with(N_list, Poncatime:::planeFit_interface(N_list$queries, dataScale/5)),
+  planeFitK=with(N_list, Poncatime:::planeFitK_interface(N_list$queries, 10)),
+  ## setup={
+  ##   N_points <- N
+  ##   N_queries <- N
+  ##   dataScale <- 10
+  ##   N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
+  ##   status <- Poncatime:::buildKdTree_interface(N_list$points)
+  ## },
+  seconds.limit=0.1,
   result=TRUE,
-  asoCurvatureEstimation=with(N_list, data.frame(count=Poncatime:::asoCurvatureEstimation_interface(points, queries, dataScale/5)))
+  ##asoCurvatureEstimation=with(N_list, Poncatime:::planeFit_interface(queries, dataScale/5))
 )
 plot(result_list)
 

@@ -197,7 +197,7 @@ int asoCurvatureEstimation(const Eigen::MatrixXd& queries, int k)
 
 int planeFit(const Eigen::MatrixXd& queries, int k)
 {
-    auto ret = computeFit<PlaneFit, true>(queries, k);
+    auto ret = computeFit<PlaneFit, false>(queries, k);
     return ret.nbFit;
 }
 
