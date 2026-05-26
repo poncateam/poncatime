@@ -18,10 +18,11 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    int ret = asoCurvatureEstimation(queries, scale);
-    std::cout << "[ASO] Number of fits: " << ret << " (over " << nbQueries << " tries)" << std::endl;
-    ret = planeFit(queries, scale);
-    std::cout << "[PLANE] Number of fits: " << ret << " (over " << nbQueries << " tries)" << std::endl;
+    int meanK;
+    int ret = asoCurvatureEstimation(queries, scale, meanK);
+    std::cout << "[ASO] Number of fits: " << ret << " (over " << nbQueries << " tries) with " << meanK << " neighbors in average" << std::endl;
+    ret = planeFit(queries, scale, meanK);
+    std::cout << "[PLANE] Number of fits: " << ret << " (over " << nbQueries << " tries) with " << meanK << " neighbors in average" << std::endl;
 
     return EXIT_SUCCESS;
 }
