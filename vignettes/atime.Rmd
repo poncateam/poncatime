@@ -11,7 +11,6 @@ litedown::reactor(
   comment = "#>",
   fig.width=10,
   fig.height=6)
-data.table::setDTthreads(1)
 ```
 
 The goal of this vignette is to give some examples of how to benchmark the C++ code.
