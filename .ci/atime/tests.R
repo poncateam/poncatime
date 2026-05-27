@@ -4,6 +4,7 @@ test.list <- atime::atime_test_list(
   N=10^seq(2, 5, by=0.2),
   seconds.limit=0.1,
   result=TRUE,
+  N=10^seq(3, 6, by=0.5),
   "kdTreeConstruction"=atime::atime_test(
     setup={
       N_points <- N*10
