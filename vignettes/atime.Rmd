@@ -11,29 +11,34 @@ litedown::reactor(
   comment = "#>",
   fig.width=10,
   fig.height=6)
-data.table::setDTthreads(1)
 ```
 
 The goal of this vignette is to give some examples of how to benchmark the C++ code.
 
 ```{r}
+## increase text size in all figures.
+if(require(ggplot2))theme_set(theme_bw()+theme(text=element_text(size=15)))
+
 result_list <- atime::atime(
+  N=10^seq(3, 6, by=0.2),
   setup={
-    N_points <- N*10
+    N_points <- N
     N_queries <- N
     dataScale <- 10
-    N_list <- Poncatime:::generate_data_interface(N_points, N_queries, dataScale)
+    N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
+    status <- Poncatime:::buildKdTree_interface(N_list$points)
   },
-  seconds.limit=1,
-  result=TRUE,
-  asoCurvatureEstimation=with(N_list, data.frame(count=Poncatime:::asoCurvatureEstimation_interface(points, queries, dataScale/5)))
+  "=N"=data.frame(nbFit=N, meanNeiSize=N),
+  planeFit=Poncatime:::planeFit_interface(N_list$queries, scale=dataScale/5),
+  planeFitK=Poncatime:::planeFitK_interface(N_list$queries, k=10),
+  seconds.limit=0.1,
+  result=TRUE
 )
+result_list$unit.col.vec <- with(result_list, unit.col.vec[unit.col.vec!="kilobytes"])
 plot(result_list)
 
 ref_list <- atime::references_best(result_list)
-library(ggplot2)
-plot(ref_list)+
-  theme(text=element_text(size=20))
+plot(ref_list)
 
 pred_list <- predict(ref_list)
 plot(pred_list)

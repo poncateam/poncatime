@@ -22,17 +22,51 @@ bool buildKdTree_interface
 }
 
 // [[Rcpp::export]]
-int asoCurvatureEstimation_interface
+Rcpp::DataFrame  asoCurvatureEstimation_interface
 (const Eigen::MatrixXd& queries,
  const double scale
  ){
- return asoCurvatureEstimation(queries, scale);
+ int meanNeiSize;
+ int nbFit = asoCurvatureEstimation(queries, scale, meanNeiSize);
+ return Rcpp::DataFrame::create
+   (Rcpp::Named("nbFit", nbFit),
+    Rcpp::Named("meanNeiSize", meanNeiSize));
+}
+
+
+// [[Rcpp::export]]
+Rcpp::DataFrame  asoCurvatureEstimationK_interface
+(const Eigen::MatrixXd& queries,
+ const int k
+ ){
+ int meanNeiSize = k;
+ int nbFit = asoCurvatureEstimation(queries, k);
+ return Rcpp::DataFrame::create
+   (Rcpp::Named("nbFit", nbFit),
+    Rcpp::Named("meanNeiSize", meanNeiSize));
 }
 
 // [[Rcpp::export]]
-int planeFit_interface
+Rcpp::DataFrame  planeFit_interface
 (const Eigen::MatrixXd& queries,
  const double scale
  ){
- return planeFit(queries, scale);
+  int meanNeiSize;
+  int nbFit = planeFit(queries, scale, meanNeiSize);
+  return Rcpp::DataFrame::create
+    (Rcpp::Named("nbFit", nbFit),
+     Rcpp::Named("meanNeiSize", meanNeiSize));
 }
+
+// [[Rcpp::export]]
+Rcpp::DataFrame  planeFitK_interface
+(const Eigen::MatrixXd& queries,
+ const int k
+ ){
+  int meanNeiSize = k;
+  int nbFit = planeFit(queries, k);
+  return Rcpp::DataFrame::create
+    (Rcpp::Named("nbFit", nbFit),
+     Rcpp::Named("meanNeiSize", meanNeiSize));
+}
+

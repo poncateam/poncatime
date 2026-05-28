@@ -22,7 +22,8 @@ Imports:
 SystemRequirements: CMake
 Encoding: UTF-8
 License: MIT + file LICENSE
+VignetteBuilder: litedown
 Suggests:
  testthat,
  litedown,
- ggplot2
+ ggplot2, directlabels
