@@ -51,9 +51,8 @@ Rcpp::DataFrame  planeFit_interface
 (const Eigen::MatrixXd& queries,
  const double scale
  ){
-  Rcpp::IntegerVector meanNeiSize(1);
-  Rcpp::IntegerVector nbFit(1);
-  nbFit[0] = planeFit(queries, scale, meanNeiSize[0]);
+  int meanNeiSize;
+  int nbFit = planeFit(queries, scale, meanNeiSize);
   return Rcpp::DataFrame::create
     (Rcpp::Named("nbFit", nbFit),
      Rcpp::Named("meanNeiSize", meanNeiSize));
@@ -64,10 +63,8 @@ Rcpp::DataFrame  planeFitK_interface
 (const Eigen::MatrixXd& queries,
  const int k
  ){
-  Rcpp::IntegerVector meanNeiSize(1);
-  meanNeiSize[0] = k;
-  Rcpp::IntegerVector nbFit(1);
-  nbFit[0] = planeFit(queries, k);
+  int meanNeiSize = k;
+  int nbFit = planeFit(queries, k);
   return Rcpp::DataFrame::create
     (Rcpp::Named("nbFit", nbFit),
      Rcpp::Named("meanNeiSize", meanNeiSize));
