@@ -34,6 +34,7 @@ result_list <- atime::atime(
   seconds.limit=0.1,
   result=TRUE
 )
+result_list$unit.col.vec <- with(result_list, unit.col.vec[unit.col.vec!="kilobytes"])
 plot(result_list)
 
 ref_list <- atime::references_best(result_list)
