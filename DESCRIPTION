@@ -26,4 +26,4 @@ VignetteBuilder: litedown
 Suggests:
  testthat,
  litedown,
- ggplot2
+ ggplot2, directlabels
