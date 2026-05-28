@@ -28,18 +28,10 @@ result_list <- atime::atime(
     N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
     status <- Poncatime:::buildKdTree_interface(N_list$points)
   },
-  planeFit=Poncatime:::planeFit_interface(N_list$queries, dataScale/5),
-  planeFitK=Poncatime:::planeFitK_interface(N_list$queries, 10),
-  ## setup={
-  ##   N_points <- N
-  ##   N_queries <- N
-  ##   dataScale <- 10
-  ##   N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
-  ##   status <- Poncatime:::buildKdTree_interface(N_list$points)
-  ## },
+  planeFit=Poncatime:::planeFit_interface(N_list$queries, scale=dataScale/5),
+  planeFitK=Poncatime:::planeFitK_interface(N_list$queries, k=10),
   seconds.limit=0.1,
-  result=TRUE,
-  ##asoCurvatureEstimation=with(N_list, Poncatime:::planeFit_interface(queries, dataScale/5))
+  result=TRUE
 )
 plot(result_list)
 
