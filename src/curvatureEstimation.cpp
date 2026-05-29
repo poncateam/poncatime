@@ -88,8 +88,8 @@ template <typename DataPoint>
 }
 
 void generatePointClouds(Eigen::MatrixXd& points,
-                   Eigen::MatrixXd& queries,
-                   double dataScale)
+                         Eigen::MatrixXd& queries,
+                         double dataScale)
 {
     MyPointSimple::VectorType position = MyPointSimple::VectorType::Random();
 
@@ -124,49 +124,81 @@ bool buildKdTree(const Eigen::MatrixXd& points)
     return nPoints != 0;
 }
 
-template <typename Fit>
-int computeFit(const Eigen::MatrixXd& queries, double scale)
+struct ComputeReturnType
 {
+    // number of fits
+    int nbFit{0};
+    // mean number of neighbors
+    int kNeiMean{0};
+};
+
+
+template <typename Fit, bool range, typename Param>
+ComputeReturnType computeFit(const Eigen::MatrixXd& queries, Param p)
+{
+    ComputeReturnType ret;
+
     if (tree.point_count() == 0)
     {
         std::cerr<< "KdTree has not been initialized" << std::endl;
-        return -1;
+        return ret;
     }
+
     using W      = typename Fit::WeightFunction;
     using Point  = typename Fit::DataPoint;
     using Vector = typename Point::VectorType;
+    using Scalar = typename Point::Scalar;
 
     int nQueries = queries.rows();
 
     // compute queries
-    int ret = 0;
     for (int i = 0; i != nQueries; ++i)
     {
         Vector q(queries.row(i).head(3));
         Fit f;
-        f.setWeightFunc(W(scale));
+        f.setWeightFunc(W(Scalar(p)));
         f.init(q);
-        f.computeWithIds(tree.range_neighbors(q, scale), tree.point_data());
-        if (f.isStable()) ret++;
+        if (range)
+            f.computeWithIds(tree.range_neighbors(q, p), tree.point_data());
+        else
+            f.computeWithIds(tree.k_nearest_neighbors(q, p), tree.point_data());
+        if (f.isStable())
+        {
+            ret.nbFit++;
+            ret.kNeiMean += f.getNumNeighbors();
+        }
     }
+    ret.kNeiMean /= ret.nbFit;
 
     return ret;
 }
 
-int asoCurvatureEstimation(const Eigen::MatrixXd& queries,
-                           double scale)
+using NF        = DistWeightFunc<MyPointSimple, SmoothWeightKernel<double> > ;
+using ASOBasket = Basket<MyPointSimple, NF, OrientedSphereFit>;
+using ASOFit    = BasketDiff<ASOBasket, FitSpaceDer, OrientedSphereDer, MlsSphereFitDer>;
+using PlaneFit  = Ponca::Basket<MyPointSimple, NF, CovariancePlaneFit>;
+
+int asoCurvatureEstimation(const Eigen::MatrixXd& queries, double scale, int& meanNeiSize)
 {
-    using W   = DistWeightFunc<MyPointSimple, SmoothWeightKernel<double> > ;
-    using Basket = Basket<MyPointSimple, W, OrientedSphereFit>;
-    using Fit    = BasketDiff<Basket, FitSpaceDer, OrientedSphereDer, MlsSphereFitDer>;
-    return computeFit<Fit>(queries, scale);
+    auto ret = computeFit<ASOFit, true>(queries, scale);
+    meanNeiSize = ret.kNeiMean;
+    return ret.nbFit;
 }
 
-int planeFit(const Eigen::MatrixXd& queries,
-                           double scale)
+int planeFit(const Eigen::MatrixXd& queries, double scale, int& meanNeiSize)
 {
-    using W   = DistWeightFunc<MyPointSimple, SmoothWeightKernel<double> > ;
-    using Fit =  Basket<MyPointSimple, W, CovariancePlaneFit>;
-    return computeFit<Fit>(queries, scale);
+    auto ret = computeFit<PlaneFit, true>(queries, scale);
+    meanNeiSize = ret.kNeiMean;
+    return ret.nbFit;
+}
+int asoCurvatureEstimation(const Eigen::MatrixXd& queries, int k)
+{
+    auto ret = computeFit<ASOFit, false>(queries, k);
+    return ret.nbFit;
 }
 
+int planeFit(const Eigen::MatrixXd& queries, int k)
+{
+    auto ret = computeFit<PlaneFit, false>(queries, k);
+    return ret.nbFit;
+}
