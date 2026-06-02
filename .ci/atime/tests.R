@@ -1,9 +1,9 @@
 remove.units <- "kilobytes"
 base.ref <- "main"
 test.list <- atime::atime_test_list(
-  seconds.limit=0.1,
+  seconds.limit=1,
   result=TRUE,
-  N=10^seq(2, 6, by=0.5),
+  N=10^seq(1, 6, by=0.5),
   "kdTreeConstruction"=atime::atime_test(
     setup={
       N_points <- N*10
