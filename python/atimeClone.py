@@ -1,4 +1,5 @@
 from git import Repo
+import shutil
 import os
 
 repo    = Repo("..")
@@ -21,19 +22,43 @@ run_command    = "cd build && time ./poncatime-test"
 print("Processing repository ", repoUrl, " in ", buiddDir)
 
 os.makedirs(buiddDir, exist_ok=True)
-status = os.system("cd " + buiddDir)
-for s in sha:
-    print("fetch", s)
-    subRepo = Repo.clone_from(repoUrl, os.path.join(buiddDir, s))
+
+
+
+
+
+
+
+
+
+def prepareRepository(buildDir, s, copy_src, clone = False):
+    print("Prepare", s)
+    targetDir = os.path.join(buildDir, s)
+
+    print("get repository", s)
+    subRepo = None
+
+    if not os.path.isdir(targetDir):
+        if clone:
+            subRepo = Repo.clone_from(repoUrl, targetDir)
+        else:
+            shutil.copytree(os.path.join(copy_src, ".git"), os.path.join(targetDir,".git"), dirs_exist_ok=True)
+
+    if subRepo is None:
+        subRepo = Repo(targetDir)
+
     print("switching active branch to ", s)
-    subRepo.git.checkout(s)
+    subRepo.git.checkout(s, force=True)
     print("updating submodules")
-    output = subRepo.git.submodule('update', '--init', '--recursive')
-    print("configure")
-    print("cd " + os.path.join(buiddDir, s) + " && " + config_command)
+    subRepo.git.submodule('update', '--init', '--recursive')
+
+
+for s in sha:
+    prepareRepository(buiddDir, s, "..")
+
+    print("**** CONFIGURE ****")
     os.system("cd " + os.path.join(buiddDir, s) + " && " + config_command)
-    print("build")
-    print("cd " + os.path.join(buiddDir, s) + " && " + build_command)
+    print("**** BUILD ****")
     os.system("cd " + os.path.join(buiddDir, s) + " && " + build_command)
 
 for s in sha:
