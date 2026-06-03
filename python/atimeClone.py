@@ -16,6 +16,7 @@ sha= [ "PoncaV0x3"
     , "PoncaV2xalpha0"
     , "PoncaV2xalpha1"
     , "PoncaV2xalpha2"
+    , "current"
        ]
 
 config_command = "cmake -B build -DCMAKE_BUILD_TYPE=Release src/ "
@@ -51,22 +52,28 @@ def prepareRepository(buildDir, s, copy_src, clone = False):
         print("Init Git")
         subRepo = Repo(targetDir)
 
-    print("Switch active branch to ", s)
-    subRepo.git.checkout(s, force=True)
-    print("Update submodules")
-    subRepo.git.submodule('update', '--init', '--recursive')
+    if s != "current":
+        print("Switch active branch to ", s)
+        subRepo.git.checkout(s, force=True)
+        print("Update submodules")
+        subRepo.git.submodule('update', '--init', '--recursive')
+    else:
+        print("Duplicating current version of the repository", s)
+        shutil.copytree(os.path.join("..", "src"), os.path.join(buiddDir, s, "src"), ignore=shutil.ignore_patterns('*build*','*.o'))
+
 
 
 for s in sha:
     print("**** REPOSITORY PREPARATION ****")
     prepareRepository(buiddDir, s, "..")
 
-    print("Overwrite folder `cpp` with current version")
-    targetCPPDir = os.path.join(buiddDir, s, "src", "cpp")
-    sourceCPPDir = os.path.join("..", "src", "cpp")
-    shutil.rmtree(targetCPPDir)
-    shutil.copytree(sourceCPPDir, targetCPPDir, ignore=shutil.ignore_patterns('*.git'))
-    shutil.copy(os.path.join("..", "src", "CMakeLists.txt"), os.path.join(buiddDir, s, "src"))
+    if s != "current":
+        print("Overwrite folder `cpp` with current version")
+        targetCPPDir = os.path.join(buiddDir, s, "src", "cpp")
+        sourceCPPDir = os.path.join("..", "src", "cpp")
+        shutil.rmtree(targetCPPDir)
+        shutil.copytree(sourceCPPDir, targetCPPDir, ignore=shutil.ignore_patterns('*.git'))
+        shutil.copy(os.path.join("..", "src", "CMakeLists.txt"), os.path.join(buiddDir, s, "src"))
 
 
     print("**** CONFIGURE ****")
