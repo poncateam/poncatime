@@ -13,6 +13,8 @@ sha= [ "PoncaV0x3"
     , "PoncaV1x3"
     , "PoncaV1x4"
     , "PoncaV2xalpha0"
+    , "PoncaV2xalpha1"
+    , "PoncaV2xalpha2"
        ]
 
 config_command = "cmake -B build -DCMAKE_BUILD_TYPE=Release src/ "
