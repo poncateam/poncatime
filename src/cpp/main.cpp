@@ -57,25 +57,34 @@ std::vector<TimeResult> mesureTime(PProcess prepare, RProcessList runList, const
     return res;
 }
 
+std::vector<int>logScale(int start, double base, int nbElements = 10)
+{
+
+    std::vector<int> scale;
+    scale.reserve(nbElements);
+    double current = start;
+
+    // Generate the logarithmically spaced values
+    std::generate_n(std::back_inserter(scale), nbElements, [&start, base, &current]() {
+        int c (current);
+        current *= base;
+        return c;
+    });
+    return scale;
+}
+
 int main(int argc, char **argv)
 {
-    int nbPoints  = 10000;
-    int nbQueries = 10000;
     double dataScale  = 10;
     double scale  = dataScale / 10;
 
     Eigen::MatrixXd points;
     Eigen::MatrixXd queries;
 
-    int n = nbPoints;
-    int q = nbQueries;
-    auto prepare = [&points, &queries, dataScale, n, q]()
-    {
-        points = Eigen::MatrixXd(n, 6);
-        queries = Eigen::MatrixXd(q, 3);
-        generatePointClouds(points, queries, dataScale);
-        buildKdTree(points);
-    };
+    int start = 500;
+    double base = 1.9;
+    int nbSteps = 10;
+    auto values = logScale(start, base, nbSteps);
 
     std::vector<std::string> names {
         "buildKdTree",
@@ -86,16 +95,47 @@ int main(int argc, char **argv)
         [&queries, scale](){int k; asoCurvatureEstimation(queries, scale, k);},
         [&queries, scale](){int k; planeFit(queries, scale, k);}
     };
-    auto res = mesureTime<10>(prepare, runs, names);
 
-    // transform output as json
     json j;
-    int index = 0;
-    for (const auto& n : names)
+
+    // prepare json structure
     {
-        j[n]["mean"] = res[index].mean;
-        j[n]["var"] = res[index].var;
-        ++index;
+        std::vector<double>placeholder;
+        placeholder.resize(nbSteps);
+        for (const auto& name : names)
+        {
+            j[name]["mean"] = placeholder;
+            j[name]["var"] = placeholder;
+        }
+        j["steps"] = values;
+    }
+
+    int stepId = 0;
+    for (auto v : values)
+    {
+        std::cout << "Run test with nb points = " << v << std::endl;
+        int n = v; // number of points
+        int q = v/10; // number of queries
+
+        auto prepare = [&points, &queries, dataScale, n, q]()
+        {
+            points = Eigen::MatrixXd(n, 6);
+            queries = Eigen::MatrixXd(q, 3);
+            generatePointClouds(points, queries, dataScale);
+            buildKdTree(points);
+        };
+
+        auto res = mesureTime<10>(prepare, runs, names);
+
+        int index = 0;
+        for (const auto& name : names)
+        {
+            j[name]["mean"][stepId] = res[index].mean;
+            j[name]["var"][stepId] = res[index].var;
+            ++index;
+        }
+
+        ++stepId;
     }
 
     // write prettified JSON
