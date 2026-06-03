@@ -34,29 +34,35 @@ os.makedirs(buiddDir, exist_ok=True)
 
 
 def prepareRepository(buildDir, s, copy_src, clone = False):
-    print("Prepare", s)
     targetDir = os.path.join(buildDir, s)
 
-    print("get repository", s)
     subRepo = None
 
     if not os.path.isdir(targetDir):
         if clone:
+            print("Clone repository")
             subRepo = Repo.clone_from(repoUrl, targetDir)
         else:
+            print("Copy repository")
             shutil.copytree(os.path.join(copy_src, ".git"), os.path.join(targetDir,".git"), dirs_exist_ok=True)
 
     if subRepo is None:
+        print("Init Git")
         subRepo = Repo(targetDir)
 
-    print("switching active branch to ", s)
+    print("Switch active branch to ", s)
     subRepo.git.checkout(s, force=True)
-    print("updating submodules")
+    print("Update submodules")
     subRepo.git.submodule('update', '--init', '--recursive')
 
 
 for s in sha:
+    print("**** REPOSITORY PREPARATION ****")
     prepareRepository(buiddDir, s, "..")
+
+    print("Overwrite main.cpp with current version")
+    shutil.copy(os.path.join("..", "src", "cpp", "main.cpp"), os.path.join(buiddDir, s, "src", "cpp", "main.cpp"))
+
 
     print("**** CONFIGURE ****")
     os.system("cd " + os.path.join(buiddDir, s) + " && " + config_command)
