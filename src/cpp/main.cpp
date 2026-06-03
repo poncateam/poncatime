@@ -13,77 +13,89 @@ struct TimeResult
     float var{0};  /// Variance in msec
 };
 
-template<int nbRuns = 10, typename Process>
-TimeResult mesureTime(Process p)
-{
-    TimeResult res;
-    // collect measurements
-    std::array<int, nbRuns> times;
-    res.mean = 0;
-    for (int i = 0; i != nbRuns; ++i)
-    {
-        auto start = std::chrono::steady_clock::now();
-        p();
-        auto end = std::chrono::steady_clock::now();
-        std::chrono::duration<double, std::milli> elapsed = end - start;
-        res.mean += times[i] = elapsed.count();
-    }
-    res.mean /= float(nbRuns);
 
-    // compute mean v
+template<int nbRuns, typename PProcess, typename RProcessList>
+std::vector<TimeResult> mesureTime(PProcess prepare, RProcessList runList, const std::vector<std::string>& names)
+{
+    std::vector<TimeResult> res;
+    res.resize(names.size());
+
+    // collect measurements
+    std::vector<std::array<int, nbRuns>> times;
+    times.resize(names.size());
+
     for (int i = 0; i != nbRuns; ++i)
     {
-        res.var += std::pow((times[i]-res.mean),2);
+        prepare();
+        int j = 0;
+        for (auto run : runList)
+        {
+            auto start = std::chrono::steady_clock::now();
+            run();
+            auto end = std::chrono::steady_clock::now();
+            std::chrono::duration<double, std::milli> elapsed = end - start;
+            times[j][i] = elapsed.count();
+            res[j].mean += times[j][i];
+            ++j;
+        }
     }
-    res.var /= float(nbRuns);
+
+    int j = 0;
+    for (const auto& name : names)
+    {
+        res[j].mean /= float(nbRuns);
+
+        // compute mean v
+        for (int i = 0; i != nbRuns; ++i)
+        {
+            res[j].var += std::pow((times[j][i]-res[j].mean),2);
+        }
+        res[j].var /= float(nbRuns);
+        ++j;
+    }
 
     return res;
 }
 
 int main(int argc, char **argv)
 {
-    int nbPoints  = 100000;
-    int nbQueries = 1000;
+    int nbPoints  = 10000;
+    int nbQueries = 10000;
     double dataScale  = 10;
-    double scale  = dataScale / 5;
+    double scale  = dataScale / 10;
 
-    Eigen::MatrixXd points(nbPoints, 6);
-    Eigen::MatrixXd queries(nbQueries, 3);
+    Eigen::MatrixXd points;
+    Eigen::MatrixXd queries;
 
-    generatePointClouds(points, queries, dataScale);
-    if( !buildKdTree(points) )
+    int n = nbPoints;
+    int q = nbQueries;
+    auto prepare = [&points, &queries, dataScale, n, q]()
     {
-        return EXIT_FAILURE;
-    }
+        points = Eigen::MatrixXd(n, 6);
+        queries = Eigen::MatrixXd(q, 3);
+        generatePointClouds(points, queries, dataScale);
+        buildKdTree(points);
+    };
 
+    std::vector<std::string> names {
+        "buildKdTree",
+        "asoCurvatureEstimation",
+        "planeFit"};
+    std::vector<std::function<void(void)>> runs  {
+        [&points](){buildKdTree(points);},
+        [&queries, scale](){int k; asoCurvatureEstimation(queries, scale, k);},
+        [&queries, scale](){int k; planeFit(queries, scale, k);}
+    };
+    auto res = mesureTime<10>(prepare, runs, names);
+
+    // transform output as json
     json j;
-
+    int index = 0;
+    for (const auto& n : names)
     {
-        auto res = mesureTime([&points](){buildKdTree(points);});
-        j["buildKdTree"]["mean"] = res.mean;
-        j["buildKdTree"]["var"] = res.var;
-    }
-
-    {
-        int meanK;
-        auto res = mesureTime([&queries, scale, &meanK]()
-        {
-            asoCurvatureEstimation(queries, scale, meanK);
-        });
-        j["asoCurvatureEstimation"]["mean"] = res.mean;
-        j["asoCurvatureEstimation"]["var"] = res.var;
-        j["asoCurvatureEstimation"]["meanK"] = meanK;
-    }
-
-    {
-        int meanK;
-        auto res = mesureTime([&queries, scale, &meanK]()
-        {
-            planeFit(queries, scale, meanK);
-        });
-        j["planeFit"]["mean"] = res.mean;
-        j["planeFit"]["var"] = res.var;
-        j["planeFit"]["meanK"] = meanK;
+        j[n]["mean"] = res[index].mean;
+        j[n]["var"] = res[index].var;
+        ++index;
     }
 
     // write prettified JSON
