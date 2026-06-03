@@ -45,8 +45,12 @@ def prepareRepository(buildDir, s, copy_src, clone = False):
             print("Clone repository")
             subRepo = Repo.clone_from(repoUrl, targetDir)
         else:
-            print("Copy repository")
-            shutil.copytree(os.path.join(copy_src, ".git"), os.path.join(targetDir,".git"), dirs_exist_ok=True)
+            if s != "current":
+                print("Copy repository")
+                shutil.copytree(os.path.join(copy_src, ".git"), os.path.join(targetDir,".git"), dirs_exist_ok=True)
+            else:
+                print("Wipe previous version of the current repository")
+                shutil.rmtree(targetDir)
 
     if subRepo is None:
         print("Init Git")
@@ -58,37 +62,44 @@ def prepareRepository(buildDir, s, copy_src, clone = False):
         print("Update submodules")
         subRepo.git.submodule('update', '--init', '--recursive')
     else:
-        print("Duplicating current version of the repository", s)
+        print("Duplicating current version of the repository")
         shutil.copytree(os.path.join("..", "src"), os.path.join(buiddDir, s, "src"), ignore=shutil.ignore_patterns('*build*','*.o'))
 
 
 
 for s in sha:
-    print("**** REPOSITORY PREPARATION ****")
-    prepareRepository(buiddDir, s, "..")
+    jsonFile = os.path.join(buiddDir, s, "build", "run_output.json")
+    if os.path.isfile(jsonFile):
+        print ("json file found for", s, "... Skipping preparation" )
+    else:
+        print("**** REPOSITORY PREPARATION ****")
+        prepareRepository(buiddDir, s, "..")
 
-    if s != "current":
-        print("Overwrite folder `cpp` with current version")
-        targetCPPDir = os.path.join(buiddDir, s, "src", "cpp")
-        sourceCPPDir = os.path.join("..", "src", "cpp")
-        shutil.rmtree(targetCPPDir)
-        shutil.copytree(sourceCPPDir, targetCPPDir, ignore=shutil.ignore_patterns('*.git'))
-        shutil.copy(os.path.join("..", "src", "CMakeLists.txt"), os.path.join(buiddDir, s, "src"))
+        if s != "current":
+            print("Overwrite folder `cpp` with current version")
+            targetCPPDir = os.path.join(buiddDir, s, "src", "cpp")
+            sourceCPPDir = os.path.join("..", "src", "cpp")
+            shutil.rmtree(targetCPPDir)
+            shutil.copytree(sourceCPPDir, targetCPPDir, ignore=shutil.ignore_patterns('*.git'))
+            shutil.copy(os.path.join("..", "src", "CMakeLists.txt"), os.path.join(buiddDir, s, "src"))
 
 
-    print("**** CONFIGURE ****")
-    os.system("cd " + os.path.join(buiddDir, s) + " && " + config_command)
-    print("**** BUILD ****")
-    os.system("cd " + os.path.join(buiddDir, s) + " && " + build_command)
+        print("**** CONFIGURE ****")
+        os.system("cd " + os.path.join(buiddDir, s) + " && " + config_command)
+        print("**** BUILD ****")
+        os.system("cd " + os.path.join(buiddDir, s) + " && " + build_command)
 
 # json file used to store the results experiments
 resJson = {}
 
 for s in sha:
-    print("run ", os.path.join(buiddDir, s))
-    status = os.system("cd " + os.path.join(buiddDir, s) + " && " + run_command)
-
     jsonFile = os.path.join(buiddDir, s, "build", "run_output.json")
+    if os.path.isfile(jsonFile):
+        print ("json file found for", s, "... Skipping run" )
+    else:
+        print("run ", os.path.join(buiddDir, s))
+        status = os.system("cd " + os.path.join(buiddDir, s) + " && " + run_command)
+
     with open(jsonFile, "r") as file:
         data = json.load(file)
         resJson[s] = data
