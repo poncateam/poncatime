@@ -1,6 +1,7 @@
 from git import Repo
 import shutil
 import os
+import json
 
 repo    = Repo("..")
 repoUrl = repo.remote().url
@@ -19,7 +20,7 @@ sha= [ "PoncaV0x3"
 
 config_command = "cmake -B build -DCMAKE_BUILD_TYPE=Release src/ "
 build_command  = "cmake --build build -j 4"
-run_command    = "cd build && time ./poncatime-test"
+run_command    = "cd build && ./poncatime-test"
 
 print("Processing repository ", repoUrl, " in ", buiddDir)
 
@@ -60,8 +61,12 @@ for s in sha:
     print("**** REPOSITORY PREPARATION ****")
     prepareRepository(buiddDir, s, "..")
 
-    print("Overwrite main.cpp with current version")
-    shutil.copy(os.path.join("..", "src", "cpp", "main.cpp"), os.path.join(buiddDir, s, "src", "cpp", "main.cpp"))
+    print("Overwrite folder `cpp` with current version")
+    targetCPPDir = os.path.join(buiddDir, s, "src", "cpp")
+    sourceCPPDir = os.path.join("..", "src", "cpp")
+    shutil.rmtree(targetCPPDir)
+    shutil.copytree(sourceCPPDir, targetCPPDir, ignore=shutil.ignore_patterns('*.git'))
+    shutil.copy(os.path.join("..", "src", "CMakeLists.txt"), os.path.join(buiddDir, s, "src"))
 
 
     print("**** CONFIGURE ****")
@@ -69,8 +74,17 @@ for s in sha:
     print("**** BUILD ****")
     os.system("cd " + os.path.join(buiddDir, s) + " && " + build_command)
 
+# json file used to store the results experiments
+resJson = {}
+
 for s in sha:
     print("run ", os.path.join(buiddDir, s))
     status = os.system("cd " + os.path.join(buiddDir, s) + " && " + run_command)
 
-status = os.system("cd ..")
+    jsonFile = os.path.join(buiddDir, s, "build", "run_output.json")
+    with open(jsonFile, "r") as file:
+        data = json.load(file)
+        resJson[s] = data
+
+with open("results.json", "w") as file:
+    json.dump(resJson, file, indent=4)
