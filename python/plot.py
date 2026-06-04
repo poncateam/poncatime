@@ -33,6 +33,7 @@ with open(jsonFile, "r") as file:
         j=0
         for sha in data:
             x = data[sha][stepsKey]
+            x_rev = x[::-1]
             y = data[sha][testName]["mean"]
 
             stdDev = np.sqrt(data[sha][testName]["var"])
@@ -46,7 +47,20 @@ with open(jsonFile, "r") as file:
                                      mode='lines',
                                      showlegend=i==1
                                      ), row=1, col=i)
+            # color_alpha = colors[j][:-1] + ", 0.2" + colors[j][-1]
+            # fig.add_trace(go.Scatter(
+            #     x=x+x_rev,
+            #     y=upperBound+lowerBound,
+            #     fill='toself',
+            #     fillcolor=color_alpha,
+            #     line_color=colors[j],
+            #     name='Premium',
+            #     showlegend=False,
+            # ))
             j=j+1
         i = i+1
     fig.update_layout(title_text="Side By Side Subplots")
+    fig.update_xaxes(type="log")
+    fig.update_yaxes(type="log")
+
     fig.write_html("results.html")
