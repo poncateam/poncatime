@@ -16,25 +16,16 @@ test.list <- atime::atime_test_list(
   seconds.limit=0.1,
   result=TRUE,
   N=10^seq(2, 6, by=0.5),
-  "kdTreeConstruction"=atime::atime_test(
+  buildKdTree=atime::atime_test(
     setup={
-      N_points <- N*10
-      dataScale <- 10
-      N_list <- Poncatime:::generatePointClouds_interface(N_points, 0, dataScale)
-    },
-    expr=Poncatime:::buildKdTree_interface(N_list$points)
-  ),
-  "asoCurvatureEstimation(Np=Nq*10)"=atime::atime_test(
-    setup={
-      N_points <- N*10
-      N_queries <- N
+      N_points <- N
+      N_queries <- 0
       dataScale <- 10
       N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
     },
-    setup.version=Poncatime:::buildKdTree_interface(N_list$points),
-    expr=Poncatime:::asoCurvatureEstimation_interface(N_list$queries, dataScale/5)
+    expr=Poncatime:::buildKdTree_interface(N_list$points)
   ),
-  "asoCurvatureEstimation(Np=Nq)"=atime::atime_test(
+  asoCurvatureEstimation=atime::atime_test(
     setup={
       N_points <- N
       N_queries <- N
@@ -44,17 +35,17 @@ test.list <- atime::atime_test_list(
     setup.version=Poncatime:::buildKdTree_interface(N_list$points),
     expr=Poncatime:::asoCurvatureEstimation_interface(N_list$queries, dataScale/5)
   ),
-  "planeFit(Np=Nq*10)"=atime::atime_test(
+  planeFitK=atime::atime_test(
     setup={
-      N_points <- N*10
+      N_points <- N
       N_queries <- N
       dataScale <- 10
       N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
     },
     setup.version=Poncatime:::buildKdTree_interface(N_list$points),
-    expr=Poncatime:::planeFit_interface(N_list$queries, dataScale/5)
+    expr=Poncatime:::planeFitK_interface(N_list$queries, k=10)
   ),
-  "planeFit(Np=Nq)"=atime::atime_test(
+  planeFit=atime::atime_test(
     setup={
       N_points <- N
       N_queries <- N
