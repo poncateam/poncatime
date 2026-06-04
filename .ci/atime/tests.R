@@ -1,5 +1,17 @@
 remove.units <- "kilobytes"
 base.ref <- "main"
+version.colors = c(
+  HEAD="#6EA358", 
+  "ponca v1.0" = "#FFD1C7",
+  "ponca v1.2" = "#FFB5A3",
+  "ponca v1.3" = "#FF9C85",
+  "ponca v1.4" = "#FF7D5E",
+  "ponca v2.alpha0" = "#C9DCFF",
+  "ponca v2.alpha1" = "#A1C1FF",
+  "ponca v2.alpha2" = "#82ABFF",
+  "ponca v2.alpha3" = "#548CFF"
+)
+
 test.list <- atime::atime_test_list(
   seconds.limit=0.1,
   result=TRUE,
@@ -61,4 +73,6 @@ for(test.name in names(test.list)){
   test.list[[test.name]][["ponca v1.4"]] <- "PoncaV1x4"
   test.list[[test.name]][["ponca v2.alpha0"]] <- "PoncaV2xalpha0"
   test.list[[test.name]][["ponca v2.alpha1"]] <- "PoncaV2xalpha1"
+  test.list[[test.name]][["ponca v2.alpha2"]] <- "PoncaV2xalpha2"
 }
+
