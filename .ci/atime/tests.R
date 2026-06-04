@@ -25,6 +25,16 @@ test.list <- atime::atime_test_list(
     },
     expr=Poncatime:::buildKdTree_interface(N_list$points)
   ),
+  asoCurvatureEstimationK=atime::atime_test(
+    setup={
+      N_points <- N
+      N_queries <- N
+      dataScale <- 10
+      N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
+    },
+    setup.version=Poncatime:::buildKdTree_interface(N_list$points),
+    expr=Poncatime:::asoCurvatureEstimationK_interface(N_list$queries, k=10)
+  ),
   asoCurvatureEstimation=atime::atime_test(
     setup={
       N_points <- N
