@@ -60,5 +60,5 @@ for(test.name in names(test.list)){
   # test.list[[test.name]][["ponca v1.3"]] <- "PoncaV1x3"
   test.list[[test.name]][["ponca v1.4"]] <- "PoncaV1x4"
   test.list[[test.name]][["ponca v2.alpha0"]] <- "PoncaV2xalpha0"
-  #test.list[[test.name]][["ponca v2.alpha1"]] <- "PoncaV2xalpha1"
+  test.list[[test.name]][["ponca v2.alpha1"]] <- "PoncaV2xalpha1"
 }
