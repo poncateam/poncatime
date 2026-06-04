@@ -9,9 +9,8 @@ test.list <- atime::atime_test_list(
       N_points <- N*10
       dataScale <- 10
       N_list <- Poncatime:::generatePointClouds_interface(N_points, 0, dataScale)
-      status <- Poncatime:::buildKdTree_interface(N_list$points)
     },
-    expr=data.frame(nbFit=Poncatime:::buildKdTree_interface(N_list$points), meanNeiSize=0)
+    expr=Poncatime:::buildKdTree_interface(N_list$points)
   ),
   "asoCurvatureEstimation(Np=Nq*10)"=atime::atime_test(
     setup={
@@ -19,8 +18,8 @@ test.list <- atime::atime_test_list(
       N_queries <- N
       dataScale <- 10
       N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
-      status <- Poncatime:::buildKdTree_interface(N_list$points)
     },
+    setup.version=Poncatime:::buildKdTree_interface(N_list$points),
     expr=Poncatime:::asoCurvatureEstimation_interface(N_list$queries, dataScale/5)
   ),
   "asoCurvatureEstimation(Np=Nq)"=atime::atime_test(
@@ -29,8 +28,8 @@ test.list <- atime::atime_test_list(
       N_queries <- N
       dataScale <- 10
       N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
-      status <- Poncatime:::buildKdTree_interface(N_list$points)
     },
+    setup.version=Poncatime:::buildKdTree_interface(N_list$points),
     expr=Poncatime:::asoCurvatureEstimation_interface(N_list$queries, dataScale/5)
   ),
   "planeFit(Np=Nq*10)"=atime::atime_test(
@@ -39,8 +38,8 @@ test.list <- atime::atime_test_list(
       N_queries <- N
       dataScale <- 10
       N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
-      status <- Poncatime:::buildKdTree_interface(N_list$points)
     },
+    setup.version=Poncatime:::buildKdTree_interface(N_list$points),
     expr=Poncatime:::planeFit_interface(N_list$queries, dataScale/5)
   ),
   "planeFit(Np=Nq)"=atime::atime_test(
@@ -49,8 +48,8 @@ test.list <- atime::atime_test_list(
       N_queries <- N
       dataScale <- 10
       N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
-      status <- Poncatime:::buildKdTree_interface(N_list$points)
     },
+    setup.version=Poncatime:::buildKdTree_interface(N_list$points),
     expr=Poncatime:::planeFit_interface(N_list$queries, dataScale/5)
   )
 )
@@ -61,4 +60,5 @@ for(test.name in names(test.list)){
   # test.list[[test.name]][["ponca v1.3"]] <- "PoncaV1x3"
   test.list[[test.name]][["ponca v1.4"]] <- "PoncaV1x4"
   test.list[[test.name]][["ponca v2.alpha0"]] <- "PoncaV2xalpha0"
+  test.list[[test.name]][["ponca v2.alpha1"]] <- "PoncaV2xalpha1"
 }
