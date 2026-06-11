@@ -1,3 +1,4 @@
+##devtools::load_all("~/R/atime")
 remotes::install_github("tdhock/atime@poncatime")
 
 edit_wrapper <- function(pkg.path){
@@ -11,19 +12,9 @@ edit_wrapper <- function(pkg.path){
       system(paste("cp", file.path(vdir, "*"), src.dir))
     }
     unlink(file.path(src.dir, "*o"))
-    INSTALL.cmd <- paste(
-      shQuote(file.path(
-        Sys.getenv("R_HOME"),
-        "bin",
-        "R")),
-      'CMD INSTALL -l',
-      shQuote(.libPaths()[1]),
-      shQuote(pkg.path))
-    print(status.int <- system(INSTALL.cmd))
-    if(status.int == 0)break
+    status.int <- atime:::R_CMD_INSTALL(pkg.path)
+    if(status.int == 0)return(vdir)
   }
-  status.int
-  vdir
 }
 system("cd ../external/ponca && git checkout v1.4")
 system("cd ../external/ponca && git checkout v2.0.alpha1")
@@ -31,18 +22,20 @@ edit_wrapper("../..")
 
 vres <- atime::atime_versions(
   pkg.path="../..",
-  checkout="../external/ponca", #TODO
+  checkout.path="../external/ponca",
   verbose=TRUE,
   pkg.edit.fun=function(old.Package, new.Package, sha, new.pkg.path){
     pkg_find_replace <- function(glob, FIND, REPLACE, warn=TRUE){
       glob_find_replace(file.path(new.pkg.path, glob), FIND, REPLACE, warn)
     }
+    edit_wrapper(new.pkg.path)
     pkg_find_replace(
       "DESCRIPTION", 
       paste0("Package:\\s+", old.Package),
       paste("Package:", new.Package))
     Package_ <- gsub(".", "_", old.Package, fixed=TRUE)
-    new.Package_ <- paste0(Package_, "_", sha)
+    sha_ <- gsub(".", "_", sha, fixed=TRUE)
+    new.Package_ <- paste0(Package_, "_", sha_)
     pkg_find_replace(
       file.path("src", "RcppExports.cpp"),
       paste0("R_init_", Package_),
@@ -63,5 +56,7 @@ vres <- atime::atime_versions(
     dataScale <- 10
     N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
   },
-  main="e20b31406626bf916da3990d7c64b820ebf9ca58",
+  v1.4="v1.4",
+  v2.0.alpha1="v2.0.alpha1",
   expr=Poncatime:::buildKdTree_interface(N_list$points))
+plot(vres)
