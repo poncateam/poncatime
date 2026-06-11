@@ -30,7 +30,12 @@ edit_poncatime <- function(old.Package, new.Package, sha, new.pkg.path){
   pkg_find_replace <- function(glob, FIND, REPLACE, warn=TRUE){
     glob_find_replace(file.path(new.pkg.path, glob), FIND, REPLACE, warn)
   }
-  edit_wrapper(new.pkg.path)
+  wrapper <- edit_wrapper(new.pkg.path)
+  if(is.null(wrapper)){
+    stop(sprintf("failed to find a wrapper which compiles for %s", sha))
+  }else{
+    cat(sprintf("wrapper=%s compiles for %s", wrapper, sha))
+  }
   pkg_find_replace(
     "DESCRIPTION",
     paste0("Package:\\s+", old.Package),
