@@ -1,14 +1,14 @@
 remove.units <- "kilobytes"
 version.colors = c(
   HEAD="#6EA358", 
-  "ponca v1.0" = "#FFD1C7",
-  "ponca v1.2" = "#FFB5A3",
-  "ponca v1.3" = "#FF9C85",
-  "ponca v1.4" = "#FF7D5E",
-  "ponca v2.alpha0" = "#C9DCFF",
-  "ponca v2.alpha1" = "#A1C1FF",
-  "ponca v2.alpha2" = "#82ABFF",
-  "ponca v2.alpha3" = "#548CFF"
+  "v1.0" = "#FFD1C7",
+  "v1.2" = "#FFB5A3",
+  "v1.3" = "#FF9C85",
+  "v1.4" = "#FF7D5E",
+  "v2.0.alpha0" = "#C9DCFF",
+  "v2.0.alpha1" = "#A1C1FF",
+  "v2.0.alpha2" = "#82ABFF",
+  "v2.0.alpha3" = "#548CFF"
 )
 
 edit_wrapper <- function(pkg.path){
@@ -57,15 +57,6 @@ test.list <- atime::atime_test_list(
   seconds.limit=0.1,
   N=10^seq(2, 6, by=0.5),
   pkg.edit.fun=edit_poncatime,
-  buildKdTree=atime::atime_test(
-    setup={
-      N_points <- N
-      N_queries <- 0
-      dataScale <- 10
-      N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
-    },
-    expr=Poncatime:::buildKdTree_interface(N_list$points)
-  ),
   asoCurvatureEstimationK=atime::atime_test(
     setup={
       N_points <- N
@@ -76,16 +67,16 @@ test.list <- atime::atime_test_list(
     setup.version=Poncatime:::buildKdTree_interface(N_list$points),
     expr=Poncatime:::asoCurvatureEstimationK_interface(N_list$queries, k=10)
   ),
-  asoCurvatureEstimation=atime::atime_test(
-    setup={
-      N_points <- N
-      N_queries <- N
-      dataScale <- 10
-      N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
-    },
-    setup.version=Poncatime:::buildKdTree_interface(N_list$points),
-    expr=Poncatime:::asoCurvatureEstimation_interface(N_list$queries, dataScale/5)
-  ),
+  ## asoCurvatureEstimation=atime::atime_test(
+  ##   setup={
+  ##     N_points <- N
+  ##     N_queries <- N
+  ##     dataScale <- 10
+  ##     N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
+  ##   },
+  ##   setup.version=Poncatime:::buildKdTree_interface(N_list$points),
+  ##   expr=Poncatime:::asoCurvatureEstimation_interface(N_list$queries, dataScale/5)
+  ## ),
   planeFitK=atime::atime_test(
     setup={
       N_points <- N
@@ -96,15 +87,24 @@ test.list <- atime::atime_test_list(
     setup.version=Poncatime:::buildKdTree_interface(N_list$points),
     expr=Poncatime:::planeFitK_interface(N_list$queries, k=10)
   ),
-  planeFit=atime::atime_test(
+  ## planeFit=atime::atime_test(
+  ##   setup={
+  ##     N_points <- N
+  ##     N_queries <- N
+  ##     dataScale <- 10
+  ##     N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
+  ##   },
+  ##   setup.version=Poncatime:::buildKdTree_interface(N_list$points),
+  ##   expr=Poncatime:::planeFit_interface(N_list$queries, dataScale/5)
+  ## ),
+  buildKdTree=atime::atime_test(
     setup={
       N_points <- N
-      N_queries <- N
+      N_queries <- 0
       dataScale <- 10
       N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
     },
-    setup.version=Poncatime:::buildKdTree_interface(N_list$points),
-    expr=Poncatime:::planeFit_interface(N_list$queries, dataScale/5)
+    expr=Poncatime:::buildKdTree_interface(N_list$points)
   )
 )
 
