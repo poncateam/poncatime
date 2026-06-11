@@ -17,7 +17,7 @@ edit_wrapper <- function(pkg.path){
     src.dir, "wrapper-versions", "*", "curvatureEstimation.h"))
   (version.dirs <- c("", dirname(h.vec)))
   for(vdir in version.dirs){
-    print(vdir)
+    cat(sprintf("Attempting to compile with wrapper=%s\n", vdir))
     if(vdir != ""){
       system(paste("cp", file.path(vdir, "*"), src.dir))
     }
@@ -30,11 +30,12 @@ edit_poncatime <- function(old.Package, new.Package, sha, new.pkg.path){
   pkg_find_replace <- function(glob, FIND, REPLACE, warn=TRUE){
     glob_find_replace(file.path(new.pkg.path, glob), FIND, REPLACE, warn)
   }
+  cat(sprintf("Attempting to find a wrapper for %s\n", sha))
   wrapper <- edit_wrapper(new.pkg.path)
   if(is.null(wrapper)){
     stop(sprintf("failed to find a wrapper which compiles for %s", sha))
   }else{
-    cat(sprintf("wrapper=%s compiles for %s", wrapper, sha))
+    cat(sprintf("wrapper=%s compiles for %s\n", wrapper, sha))
   }
   pkg_find_replace(
     "DESCRIPTION",
