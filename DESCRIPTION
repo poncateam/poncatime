@@ -19,7 +19,7 @@ LinkingTo:
 Imports:
  Rcpp,
  RcppEigen
-SystemRequirements: CMake
+SystemRequirements: CMake, C++20
 Encoding: UTF-8
 License: MIT + file LICENSE
 VignetteBuilder: litedown
