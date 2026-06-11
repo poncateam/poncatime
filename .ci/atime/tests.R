@@ -1,5 +1,4 @@
 remove.units <- "kilobytes"
-base.ref <- "main"
 version.colors = c(
   HEAD="#6EA358", 
   "ponca v1.0" = "#FFD1C7",
@@ -12,10 +11,52 @@ version.colors = c(
   "ponca v2.alpha3" = "#548CFF"
 )
 
+edit_wrapper <- function(pkg.path){
+  src.dir <- file.path(pkg.path, "src")
+  h.vec <- Sys.glob(file.path(
+    src.dir, "wrapper-versions", "*", "curvatureEstimation.h"))
+  (version.dirs <- c("", dirname(h.vec)))
+  for(vdir in version.dirs){
+    print(vdir)
+    if(vdir != ""){
+      system(paste("cp", file.path(vdir, "*"), src.dir))
+    }
+    unlink(file.path(src.dir, "*o"))
+    status.int <- atime:::R_CMD_INSTALL(pkg.path)
+    if(status.int == 0)return(vdir)
+  }
+}
+edit_poncatime <- function(old.Package, new.Package, sha, new.pkg.path){
+  pkg_find_replace <- function(glob, FIND, REPLACE, warn=TRUE){
+    glob_find_replace(file.path(new.pkg.path, glob), FIND, REPLACE, warn)
+  }
+  edit_wrapper(new.pkg.path)
+  pkg_find_replace(
+    "DESCRIPTION",
+    paste0("Package:\\s+", old.Package),
+    paste("Package:", new.Package))
+  Package_ <- gsub(".", "_", old.Package, fixed=TRUE)
+  sha_ <- gsub(".", "_", sha, fixed=TRUE)
+  new.Package_ <- paste0(Package_, "_", sha_)
+  pkg_find_replace(
+    file.path("src", "RcppExports.cpp"),
+    paste0("R_init_", Package_),
+    paste0("R_init_", new.Package_))
+  pkg_find_replace(
+    file.path("R", "RcppExports.R"),
+    sprintf("PACKAGE = '%s'", old.Package),
+    sprintf("PACKAGE = '%s'", new.Package),
+    warn=FALSE)#does not appear if registration used.
+  pkg_find_replace(
+    "NAMESPACE",
+    sprintf('useDynLib\\("?%s"?', Package_),
+    paste0('useDynLib(', new.Package))
+}
+
 test.list <- atime::atime_test_list(
   seconds.limit=0.1,
-  result=TRUE,
   N=10^seq(2, 6, by=0.5),
+  pkg.edit.fun=edit_poncatime,
   buildKdTree=atime::atime_test(
     setup={
       N_points <- N
@@ -66,14 +107,13 @@ test.list <- atime::atime_test_list(
     expr=Poncatime:::planeFit_interface(N_list$queries, dataScale/5)
   )
 )
-for(test.name in names(test.list)){
-  # test.list[[test.name]][["ponca v0.3"]] <- "PoncaV0x3"
-  test.list[[test.name]][["ponca v1.0"]] <- "PoncaV1x0"
-  # test.list[[test.name]][["ponca v1.2"]] <- "PoncaV1x2"
-  # test.list[[test.name]][["ponca v1.3"]] <- "PoncaV1x3"
-  test.list[[test.name]][["ponca v1.4"]] <- "PoncaV1x4"
-  test.list[[test.name]][["ponca v2.alpha0"]] <- "PoncaV2xalpha0"
-  test.list[[test.name]][["ponca v2.alpha1"]] <- "PoncaV2xalpha1"
-  test.list[[test.name]][["ponca v2.alpha2"]] <- "PoncaV2xalpha2"
+
+## historical versions of ponca repo to run in each test.
+checkout.path.relative <- "src/external/ponca"
+ponca.versions <- c(
+  "v1.4",
+  "v2.0.alpha1")
+for(test.name in names(test.list))for(ponca.vers in ponca.versions){
+  test.list[[test.name]][[ponca.vers]] <- ponca.vers
 }
 
