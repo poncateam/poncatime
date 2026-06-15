@@ -29,6 +29,8 @@ jobs:
     - name: submodules
       run: |
         git submodule update --init --recursive
+        cd src/external/ponca
+        git checkout master
       shell: bash
     - name: Setup
       uses: eddelbuettel/github-actions/r-ci@master
