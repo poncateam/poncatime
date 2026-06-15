@@ -72,6 +72,21 @@ jobs:
         flist = prc.filter((o) => { return o.body.startsWith(tag); });
         if(flist.length == 0) process.exit(0);
         fs.writeFileSync('comment-number.txt', flist[0].id+"");
+    - name: add images
+      shell: bash
+      run: |
+        uploadImage() {
+          local png=$1
+          curl -F "file=@$png -F "visibility=unlisted" https://picrd.com/api/upload | sed 's/.*image_url":"//' | sed 's/",".*//'
+        }
+        PREVIEW_URL=$(uploadImage .ci/atime/tests_preview_facet.png)
+        ALL_URL=$(uploadImage .ci/atime/tests_all_facet.png)
+        echo $PREVIEW_URL $ALL_URL
+        cat .ci/atime/HEAD_issues.md >> comment.md
+        echo -e "\n[![Comparison Plot]($PREVIEW_URL)]($ALL_URL)" >> comment.md
+        echo -e "\nGenerated via commit ${{ github.event.pull_request.head.sha }}" >> comment.md
+        echo -e "\nDownload link for the artifact containing the test results: [↓ atime-results.zip](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }})" >> comment.md
+
     - name: add content to comment.md
       run: |
         R_SETUP_DURATION=$((END_SETUP_START_TESTS_TIME - START_SETUP_TIME))
@@ -93,14 +108,6 @@ jobs:
             fi
         }
         
-        # Comment contents:
-        PREVIEW_URL=$(curl -F "file=@.ci/atime/tests_preview_facet.png -F "visibility=unlisted" https://picrd.com/api/upload | sed 's/.*image_url":"//' | sed 's/",".*//')
-        ALL_URL=$(curl -F "file=@.ci/atime/tests_all_facet.png -F "visibility=unlisted" https://picrd.com/api/upload | sed 's/.*image_url":"//' | sed 's/",".*//')
-        echo $PREVIEW_URL $ALL_URL
-        cat .ci/atime/HEAD_issues.md >> comment.md
-        echo -e "\n[![Comparison Plot]($PREVIEW_URL)]($ALL_URL)" >> comment.md
-        echo -e "\nGenerated via commit ${{ github.event.pull_request.head.sha }}" >> comment.md
-        echo -e "\nDownload link for the artifact containing the test results: [↓ atime-results.zip](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }})" >> comment.md
         echo -e "\n| Task | Duration |" >> comment.md
         echo -e "|---|---|" >> comment.md
         echo -e "| R setup and installing dependencies   | $(formatTime $R_SETUP_DURATION)       |" >> comment.md
