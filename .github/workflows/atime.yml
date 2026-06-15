@@ -134,8 +134,8 @@ jobs:
         if [ "$COMMENT_NUMBER" == "" ]; then CMD=$PR_API; else CMD=$ISSUES_API/comments/$COMMENT_NUMBER; fi; echo $CMD
         cat comment.md
         MD=$(sed 's/"/\\"/g' comment.md | awk '$1=$1' ORS='\\n')
-        cat pr-comment.json
         echo '{"body":"'$MD'"}' > pr-comment.json
+        cat pr-comment.json
         curl --no-progress-meter -L -H "Accept: $ACCEPT" -H "X-GitHub-Api-Version: $VERSION" -X POST -H "Authorization: Bearer $PR_COMMENT_TOKEN" $CMD -d "@pr-comment.json"
 
 
