@@ -46,4 +46,3 @@ int asoCurvatureEstimation(const Eigen::MatrixXd& queries, int k);
 ///
 /// \return the number of points correctly analyzed, or -1 if the KdTree has not been initialized first
 int planeFit(const Eigen::MatrixXd& queries, int k);
-

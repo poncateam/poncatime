@@ -173,7 +173,10 @@ ComputeReturnType computeFit(const Eigen::MatrixXd& queries, Param p)
 
 using NF        = DistWeightFunc<MyPointSimple, SmoothWeightKernel<double> > ;
 using ASOBasket = Basket<MyPointSimple, NF, OrientedSphereFit>;
-using ASOFit    = BasketDiff<ASOBasket, FitSpaceDer, OrientedSphereDer, MlsSphereFitDer>;
+using ASOFit    = BasketDiff<ASOBasket, FitSpaceDer, OrientedSphereDer, MlsSphereFitDer,
+                    CurvatureEstimatorDer,
+                    NormalDerivativeWeingartenEstimator,WeingartenCurvatureEstimatorDer>;
+
 using PlaneFit  = Ponca::Basket<MyPointSimple, NF, CovariancePlaneFit>;
 
 int asoCurvatureEstimation(const Eigen::MatrixXd& queries, double scale, int& meanNeiSize)
@@ -200,4 +203,3 @@ int planeFit(const Eigen::MatrixXd& queries, int k)
     auto ret = computeFit<PlaneFit, false>(queries, k);
     return ret.nbFit;
 }
-
