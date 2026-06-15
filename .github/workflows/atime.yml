@@ -36,7 +36,6 @@ jobs:
       run: ./run.sh install_all
     - name: Install and run atime@poncatime
       run: |
-        cp /github/home/.Rprofile .
         echo "options(repos = c(CRAN = 'https://cloud.r-project.org'))" >> .Rprofile
         Rscript -e 'install.packages(c("atime", "remotes", "ggplot2", "directlabels"))'
         Rscript -e 'remotes::install_github("tdhock/atime@poncatime")'

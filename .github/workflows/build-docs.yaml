@@ -22,6 +22,8 @@ jobs:
       - name: install package and build site
         run: |
           git submodule update --init --recursive
+          Rscript -e 'install.packages("remotes")'
+          Rscript -e 'remotes::install_github("tdhock/atime@poncatime")'
           R CMD build .
           R CMD INSTALL *.tar.gz
           R -e 'litedown::fuse_site("site")'
