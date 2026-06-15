@@ -73,16 +73,16 @@ test.list <- atime::atime_test_list(
     setup.version=Poncatime:::buildKdTree_interface(N_list$points),
     expr=Poncatime:::asoCurvatureEstimationK_interface(N_list$queries, k=10)
   ),
-  ## asoCurvatureEstimation=atime::atime_test(
-  ##   setup={
-  ##     N_points <- N
-  ##     N_queries <- N
-  ##     dataScale <- 10
-  ##     N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
-  ##   },
-  ##   setup.version=Poncatime:::buildKdTree_interface(N_list$points),
-  ##   expr=Poncatime:::asoCurvatureEstimation_interface(N_list$queries, dataScale/5)
-  ## ),
+  asoCurvatureEstimation=atime::atime_test(
+    setup={
+      N_points <- N
+      N_queries <- N
+      dataScale <- 10
+      N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
+    },
+    setup.version=Poncatime:::buildKdTree_interface(N_list$points),
+    expr=Poncatime:::asoCurvatureEstimation_interface(N_list$queries, dataScale/5)
+  ),
   planeFitK=atime::atime_test(
     setup={
       N_points <- N
@@ -93,16 +93,16 @@ test.list <- atime::atime_test_list(
     setup.version=Poncatime:::buildKdTree_interface(N_list$points),
     expr=Poncatime:::planeFitK_interface(N_list$queries, k=10)
   ),
-  ## planeFit=atime::atime_test(
-  ##   setup={
-  ##     N_points <- N
-  ##     N_queries <- N
-  ##     dataScale <- 10
-  ##     N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
-  ##   },
-  ##   setup.version=Poncatime:::buildKdTree_interface(N_list$points),
-  ##   expr=Poncatime:::planeFit_interface(N_list$queries, dataScale/5)
-  ## ),
+  planeFit=atime::atime_test(
+    setup={
+      N_points <- N
+      N_queries <- N
+      dataScale <- 10
+      N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
+    },
+    setup.version=Poncatime:::buildKdTree_interface(N_list$points),
+    expr=Poncatime:::planeFit_interface(N_list$queries, dataScale/5)
+  ),
   buildKdTree=atime::atime_test(
     setup={
       N_points <- N
