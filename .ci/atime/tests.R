@@ -117,6 +117,7 @@ test.list <- atime::atime_test_list(
 ## historical versions of ponca repo to run in each test.
 checkout.path.relative <- "src/external/ponca"
 ponca.versions <- c(
+  "v1.0",
   "v1.4",
   "v2.0.alpha1")
 for(test.name in names(test.list))for(ponca.vers in ponca.versions){
