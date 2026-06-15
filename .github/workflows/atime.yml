@@ -131,10 +131,6 @@ jobs:
         COMMENT_NUMBER=$(cat comment-number.txt)
         echo ${{ env.netlify_url }} | sed "s/\(.*\)/<\1>/" >> comment.md
         cat comment.md
-        git diff --name-only $GITHUB_BASE_REF | sed "s#^#<${{ env.netlify_url }}/#" | sed "s#vignettes\(/.*\).[Rrq]md#doc\1>#" | sed s=man/=manual#sec:man-= | sed 's/.Rd$/>/' | grep  '/\(manual\|doc\)' > diff.md
-        cat diff.md
-        if [ -s "diff.md" ]; then echo git diff shows modifications in the source file of:" >> comment.md; cat diff.md >> comment.md; fi
-        cat comment.md
         if [ "$COMMENT_NUMBER" == "" ]; then CMD=$PR_API; else CMD=$ISSUES_API/comments/$COMMENT_NUMBER; fi; echo $CMD
         MD=$(sed 's/"/\\"/g' comment.md | awk '$1=$1' ORS='\\n')
         echo '{"body":"'$MD'"}' > pr-comment.json
