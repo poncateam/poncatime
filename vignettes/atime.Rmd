@@ -29,7 +29,7 @@ result_list <- atime::atime(
     status <- Poncatime:::buildKdTree_interface(N_list$points)
   },
   "=N"=data.frame(nbFit=N, meanNeiSize=N),
-  planeFit=Poncatime:::planeFit_interface(N_list$queries, scale=dataScale/5),
+  #planeFit=Poncatime:::planeFit_interface(N_list$queries, scale=dataScale/5),
   planeFitK=Poncatime:::planeFitK_interface(N_list$queries, k=10),
   seconds.limit=0.1,
   result=TRUE
