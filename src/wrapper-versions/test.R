@@ -60,6 +60,7 @@ vres <- atime::atime_versions(
     dataScale <- 10
     N_list <- Poncatime:::generatePointClouds_interface(N_points, N_queries, dataScale)
   },
+  v1.0="v1.0",
   v1.4="v1.4",
   v2.0.alpha1="v2.0.alpha1",
   expr=Poncatime:::buildKdTree_interface(N_list$points))
