@@ -59,15 +59,19 @@ jobs:
       shell: bash
       run: |
         curl --no-progress-meter -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2026-03-10" https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments > comments.json
+        cat comments.json
         echo > comment-number.txt
         echo "<!-- automatic comment for $TAG -->" > comment.md
+        cat comment.md
     - name: comment-number.txt
       if: ${{ github.event_name == 'pull_request' }}
       shell: node {0}
       run: |
         fs = require('fs');
         tag = fs.readFileSync('comment.md', 'utf-8');
+        console.log(tag);
         content = fs.readFileSync('comments.json', 'utf-8');
+        console.log(content);
         prc = JSON.parse(content);
         flist = prc.filter((o) => { return o.body.startsWith(tag); });
         if(flist.length == 0) process.exit(0);
