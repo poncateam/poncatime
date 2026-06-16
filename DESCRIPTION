@@ -1,7 +1,7 @@
 Package: Poncatime
 Type: Package
 Title: Performance analysis of Ponca library using ATime
-Version: 0.0.1
+Version: 2026.6.15
 Authors@R: c(
  person(given = "Nicolas",
         family = "Mellado",
@@ -19,7 +19,7 @@ LinkingTo:
 Imports:
  Rcpp,
  RcppEigen
-SystemRequirements: CMake
+SystemRequirements: CMake, C++20
 Encoding: UTF-8
 License: MIT + file LICENSE
 VignetteBuilder: litedown

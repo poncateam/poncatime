@@ -33,7 +33,6 @@ Rcpp::DataFrame  asoCurvatureEstimation_interface
     Rcpp::Named("meanNeiSize", meanNeiSize));
 }
 
-
 // [[Rcpp::export]]
 Rcpp::DataFrame  asoCurvatureEstimationK_interface
 (const Eigen::MatrixXd& queries,
@@ -47,7 +46,7 @@ Rcpp::DataFrame  asoCurvatureEstimationK_interface
 }
 
 // [[Rcpp::export]]
-Rcpp::DataFrame  planeFit_interface
+Rcpp::DataFrame planeFit_interface
 (const Eigen::MatrixXd& queries,
  const double scale
  ){
