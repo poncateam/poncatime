@@ -41,9 +41,9 @@ for(result.RData in Sys.glob(file.path(Test.dir, "RData", "*"))){
 (common.dt <- rbindlist(common.dt.list))
 
 limit.dt <- data.table(seconds=tpred$seconds.limit)
-animint(
+viz <- animint(
   title="git bisect results for ponca asoCurveEstimation",
-  source=
+  source="https://github.com/poncateam/poncatime/blob/atime-bisect/.ci/atime/bisect-animint.R",
   overview=ggplot()+
     ggtitle("Overview, select commit")+
     theme_bw()+
@@ -103,7 +103,7 @@ animint(
       data=common.dt,
       color="grey",
       showSelected="commit")+
-    geom_text(aes(
+    geom_label_aligned(aes(
       N, 0, label=sprintf("largest common N=%s", paste(as.integer(N))),
       key=1),
       data=common.dt,
@@ -148,3 +148,7 @@ animint(
   duration=list(
     commit=1000)
 )
+viz
+if(FALSE){
+  animint2::animint2pages(viz, "2026-10-16-ponca-git-bisect-asoCurvatureEstimation", chromote_sleep_seconds=3)
+}
