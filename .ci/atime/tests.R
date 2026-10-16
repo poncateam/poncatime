@@ -61,7 +61,7 @@ edit_poncatime <- function(old.Package, new.Package, sha, new.pkg.path){
 
 test.list <- atime::atime_test_list(
   seconds.limit=0.1,
-  N=10^seq(2, 6, by=0.5),
+  N=10^seq(2, 6, by=0.1),
   pkg.edit.fun=edit_poncatime,
   asoCurvatureEstimationK=atime::atime_test(
     setup={
