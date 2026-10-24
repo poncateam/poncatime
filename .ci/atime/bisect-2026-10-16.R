@@ -2,16 +2,11 @@ pkg.path <- "~/R/poncatime"
 Test <- "asoCurvatureEstimation"
 library(data.table)
 if(FALSE){
-  ## atime functions for git bisect were added in this branch:
-  remotes::install_github("tdhock/atime@bisect")
   ## if you want to start the bisect over from scratch, first remove
   ## all historical versions of data.table installed by atime:
   atime::atime_versions_remove("poncatime")
 }
-(bisect.dt <- rowwiseDT(
-  old=,     new=, label=, expected=, stage=,
-  "v1.0", "v1.4", "?", "?", "final"))
-for(bisect.i in 1:nrow(bisect.dt)){
-  print(bisect.row <- bisect.dt[bisect.i])
-  bisect.row[, atime::bisect(pkg.path, Test, old, new)]
-}
+## the code below was used to compute the results on
+## https://tdhock.github.io/2026-10-16-ponca-git-bisect-asoCurvatureEstimation
+atime::bisect(pkg.path, Test, "v1.0", "v1.4")
+
