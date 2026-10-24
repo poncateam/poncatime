@@ -1,3 +1,4 @@
+checkout.path.relative <- "src/external/ponca"
 remove.units <- "kilobytes"
 version.colors = c(
   HEAD="#6EA358", 
@@ -59,10 +60,16 @@ edit_poncatime <- function(old.Package, new.Package, sha, new.pkg.path){
     paste0('useDynLib(', new.Package))
 }
 
+## historical versions of ponca repo to run in each test.
+ponca.versions <- c(
+  "v1.0",
+  "v1.4",
+  "v2.0.alpha1")
 test.list <- atime::atime_test_list(
   seconds.limit=0.1,
-  N=10^seq(2, 6, by=0.5),
+  N=unique(as.integer(10^seq(2, 6, by=0.1))),
   pkg.edit.fun=edit_poncatime,
+  ci.commits=setNames(ponca.versions, ponca.versions),
   asoCurvatureEstimationK=atime::atime_test(
     setup={
       N_points <- N
@@ -113,14 +120,4 @@ test.list <- atime::atime_test_list(
     expr=Poncatime:::buildKdTree_interface(N_list$points)
   )
 )
-
-## historical versions of ponca repo to run in each test.
-checkout.path.relative <- "src/external/ponca"
-ponca.versions <- c(
-  "v1.0",
-  "v1.4",
-  "v2.0.alpha1")
-for(test.name in names(test.list))for(ponca.vers in ponca.versions){
-  test.list[[test.name]][[ponca.vers]] <- ponca.vers
-}
 
