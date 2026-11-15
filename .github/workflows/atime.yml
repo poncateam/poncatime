@@ -17,23 +17,23 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v6
       with:
-	fetch-depth: 0
+        fetch-depth: 0
     - name: Retrieve branch references, necessary for perf testing past versions
       shell: bash
       run: |
-	git switch "${GITHUB_BASE_REF}"
-	git switch "${GITHUB_HEAD_REF}"
+        git switch "${GITHUB_BASE_REF}"
+        git switch "${GITHUB_HEAD_REF}"
     - uses: actions/setup-node@v6
       name: setup-node https://github.com/actions/setup-node?tab=readme-ov-file#usage
     - name: Safe directory exception
       run: |
-	git config --global --add safe.directory '*'
+        git config --global --add safe.directory '*'
       shell: bash
     - name: submodules
       run: |
-	git submodule update --init --recursive
-	cd src/external/ponca
-	git checkout master
+        git submodule update --init --recursive
+        cd src/external/ponca
+        git checkout master
       shell: bash
     - name: Setup
       uses: eddelbuettel/github-actions/r-ci@master
@@ -42,69 +42,69 @@ jobs:
     - name: Run atime
       shell: bash
       run: |
-	echo "options(repos = c(CRAN = 'https://cloud.r-project.org'))" >> .Rprofile
-	Rscript -e 'install.packages(c("atime", "ggplot2", "directlabels"))'          echo "END_SETUP_START_TESTS_TIME=$(date +%s)" >> "$GITHUB_ENV"
-	Rscript -e 'atime::atime_pkg(Sys.getenv("GITHUB_WORKSPACE"), tests.dir = ".ci")'
-	echo "END_TESTS_TIME=$(date +%s)" >> "$GITHUB_ENV"
+        echo "options(repos = c(CRAN = 'https://cloud.r-project.org'))" >> .Rprofile
+        Rscript -e 'install.packages(c("atime", "ggplot2", "directlabels"))'          echo "END_SETUP_START_TESTS_TIME=$(date +%s)" >> "$GITHUB_ENV"
+        Rscript -e 'atime::atime_pkg(Sys.getenv("GITHUB_WORKSPACE"), tests.dir = ".ci")'
+        echo "END_TESTS_TIME=$(date +%s)" >> "$GITHUB_ENV"
 
     - name: Upload artifact
       id: artifact-upload-step
       uses: actions/upload-artifact@v7
       with:
-	name: atime-results
-	path: .ci/atime/
+        name: atime-results
+        path: .ci/atime/
 
     - name: Post or update PR comment
       env:
-	GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-	PICRD_API_KEY: ${{ secrets.PICRD_API_KEY }}
-	PR_NUMBER: ${{ github.event.number }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PICRD_API_KEY: ${{ secrets.PICRD_API_KEY }}
+        PR_NUMBER: ${{ github.event.number }}
       shell: bash
       run: |
-	uploadImage() {
-	  curl --fail --retry 3 -sS -H "Authorization: Bearer $PICRD_API_KEY" -F "file=@$1" -F "visibility=unlisted" https://picrd.com/api/upload | jq -r '.raw_url // empty' || true
-	}
-	PREVIEW_URL=$(uploadImage .ci/atime/tests_preview_facet.png)
-	ALL_URL=$(uploadImage .ci/atime/tests_all_facet.png)
-	if [ -n "$PREVIEW_URL" ] && [ -n "$ALL_URL" ]; then
-	  PLOT_MD="[![Comparison Plot]($PREVIEW_URL)]($ALL_URL)"
-	else
-	  PLOT_MD="*(Plot image upload to picrd.com failed; download the artifact below to view plots)*"
-	fi
+        uploadImage() {
+          curl --fail --retry 3 -sS -H "Authorization: Bearer $PICRD_API_KEY" -F "file=@$1" -F "visibility=unlisted" https://picrd.com/api/upload | jq -r '.raw_url // empty' || true
+        }
+        PREVIEW_URL=$(uploadImage .ci/atime/tests_preview_facet.png)
+        ALL_URL=$(uploadImage .ci/atime/tests_all_facet.png)
+        if [ -n "$PREVIEW_URL" ] && [ -n "$ALL_URL" ]; then
+          PLOT_MD="[![Comparison Plot]($PREVIEW_URL)]($ALL_URL)"
+        else
+          PLOT_MD="*(Plot image upload to picrd.com failed; download the artifact below to view plots)*"
+        fi
 
-	R_SETUP_DURATION=$((END_SETUP_START_TESTS_TIME - START_SETUP_TIME))
-	VERSION_SETUP_DURATION=$(cut -d '.' -f 1 ./.ci/atime/install_seconds.txt)
-	ATIME_TESTS_DURATION=$((END_TESTS_TIME - END_SETUP_START_TESTS_TIME - VERSION_SETUP_DURATION))
-	formatTime() {
-	  local totalSeconds=$1
-	  if [ "$totalSeconds" -lt 0 ]; then
-	    echo "Time calculation error: negative duration"
-	  elif [ "$totalSeconds" -lt 60 ]; then
-	    echo "${totalSeconds} seconds"
-	  else
-	    echo "$((totalSeconds / 60)) minutes and $((totalSeconds % 60)) seconds"
-	  fi
-	}
+        R_SETUP_DURATION=$((END_SETUP_START_TESTS_TIME - START_SETUP_TIME))
+        VERSION_SETUP_DURATION=$(cut -d '.' -f 1 ./.ci/atime/install_seconds.txt)
+        ATIME_TESTS_DURATION=$((END_TESTS_TIME - END_SETUP_START_TESTS_TIME - VERSION_SETUP_DURATION))
+        formatTime() {
+          local totalSeconds=$1
+          if [ "$totalSeconds" -lt 0 ]; then
+            echo "Time calculation error: negative duration"
+          elif [ "$totalSeconds" -lt 60 ]; then
+            echo "${totalSeconds} seconds"
+          else
+            echo "$((totalSeconds / 60)) minutes and $((totalSeconds % 60)) seconds"
+          fi
+        }
 
-	ARTIFACT_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }}"
-	cat <<EOF > comment.md
-	$(cat .ci/atime/HEAD_issues.md)
+        ARTIFACT_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.artifact-upload-step.outputs.artifact-id }}"
+        cat <<EOF > comment.md
+        $(cat .ci/atime/HEAD_issues.md)
 
-	$PLOT_MD
+        $PLOT_MD
 
-	Generated via commit ${{ github.event.pull_request.head.sha }}
+        Generated via commit ${{ github.event.pull_request.head.sha }}
 
-	Download link for the artifact containing the test results: [↓ atime-results.zip]($ARTIFACT_URL)
+        Download link for the artifact containing the test results: [↓ atime-results.zip]($ARTIFACT_URL)
 
-	| Task | Duration |
-	|---|---|
-	| R setup and installing dependencies | $(formatTime "$R_SETUP_DURATION") |
-	| Installing different package versions | $(formatTime "$VERSION_SETUP_DURATION") |
-	| Running and plotting the test cases | $(formatTime "$ATIME_TESTS_DURATION") |
-	EOF
+        | Task | Duration |
+        |---|---|
+        | R setup and installing dependencies | $(formatTime "$R_SETUP_DURATION") |
+        | Installing different package versions | $(formatTime "$VERSION_SETUP_DURATION") |
+        | Running and plotting the test cases | $(formatTime "$ATIME_TESTS_DURATION") |
+        EOF
 
-	cat comment.md >> "$GITHUB_STEP_SUMMARY"
+        cat comment.md >> "$GITHUB_STEP_SUMMARY"
 
-	if [ "${{ github.event.pull_request.head.repo.full_name }}" = "$GITHUB_REPOSITORY" ]; then
-	  gh pr comment "$PR_NUMBER" --edit-last --create-if-none -F comment.md
-	fi
+        if [ "${{ github.event.pull_request.head.repo.full_name }}" = "$GITHUB_REPOSITORY" ]; then
+          gh pr comment "$PR_NUMBER" --edit-last --create-if-none -F comment.md
+        fi
