@@ -12,37 +12,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Start timer
+        run: echo "START_SETUP_TIME=$(date +%s)" >> $GITHUB_ENV
         shell: bash
-        run: echo "START_SETUP_TIME=$(date +%s)" >> "$GITHUB_ENV"
-
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-
       - name: Retrieve branch references, necessary for perf testing past versions
         shell: bash
         run: |
-          git branch -f "${GITHUB_BASE_REF}" "origin/${GITHUB_BASE_REF}"
-          HEAD_BRANCH="${GITHUB_HEAD_REF}"
-          if [ "$HEAD_BRANCH" = "$GITHUB_BASE_REF" ]; then
-            HEAD_BRANCH="pr-${{ github.event.number }}"
-          fi
-          git switch -C "$HEAD_BRANCH"
-
-      - uses: r-lib/actions/setup-r@v2
-        with:
-          use-public-rspm: true
-
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          cache-version: ${{ hashFiles('.ci/atime/tests.R') }}
-          extra-packages: any::atime, any::ggplot2, any::directlabels
-
+          git switch "${GITHUB_BASE_REF}"
+          git switch "${GITHUB_HEAD_REF}"
+      - uses: actions/setup-node@v6
+        name: setup-node https://github.com/actions/setup-node?tab=readme-ov-file#usage
+      - name: Safe directory exception
+        run: |
+          git config --global --add safe.directory '*'
+        shell: bash
+      - name: submodules
+        run: |
+          git submodule update --init --recursive
+          cd src/external/ponca
+          git checkout master
+        shell: bash
+      - name: Setup
+        uses: eddelbuettel/github-actions/r-ci@master
+      - name: Dependencies
+        run: ./run.sh install_all
       - name: Run atime
         shell: bash
         run: |
-          echo "END_SETUP_START_TESTS_TIME=$(date +%s)" >> "$GITHUB_ENV"
+          echo "options(repos = c(CRAN = 'https://cloud.r-project.org'))" >> .Rprofile
+          Rscript -e 'install.packages(c("atime", "ggplot2", "directlabels"))'          echo "END_SETUP_START_TESTS_TIME=$(date +%s)" >> "$GITHUB_ENV"
           Rscript -e 'atime::atime_pkg(Sys.getenv("GITHUB_WORKSPACE"), tests.dir = ".ci")'
           echo "END_TESTS_TIME=$(date +%s)" >> "$GITHUB_ENV"
 
