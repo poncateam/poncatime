@@ -47,7 +47,6 @@ jobs:
         echo "END_SETUP_START_TESTS_TIME=$(date +%s)" >> $GITHUB_ENV
         Rscript -e 'atime::atime_pkg(Sys.getenv("GITHUB_WORKSPACE"), tests.dir = ".ci");'
         echo "END_TESTS_TIME=$(date +%s)" >> $GITHUB_ENV
-      shell: bash
 
     - name: Upload artifact
       id: artifact-upload-step
